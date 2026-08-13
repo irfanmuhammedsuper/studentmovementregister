@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Crescent SNEC · Movement Register</title>
+  <meta name="theme-color" content="#7A1F2B" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%237A1F2B'/%3E%3Ctext x='50' y='66' font-size='54' text-anchor='middle' fill='%23F6F1E7' font-family='Georgia,serif'%3ES%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --paper: #F6F1E7;
+      --paper-dim: #EDE6D6;
+      --ink: #181310;
+      --ink-soft: #5B5148;
+      --line: rgba(24, 19, 16, .14);
+      --line-strong: rgba(24, 19, 16, .28);
+      --maroon: #7A1F2B;
+      --maroon-deep: #54141E;
+      --maroon-tint: rgba(122, 31, 43, .09);
+      --gold: #B8842E;
+      --gold-tint: rgba(184, 132, 46, .14);
+      --green: #2F7D5B;
+      --green-tint: rgba(47, 125, 91, .13);
+      --red: #B23A2E;
+      --red-tint: rgba(178, 58, 46, .12);
+      --surface: #FFFDF8;
+      --shadow: 0 1px 2px rgba(24,19,16,.06),0 8px 24px -12px rgba(24,19,16,.22);
+      --shadow-lg: 0 20px 60px -20px rgba(24,19,16,.4);
+      --radius: 14px;
+      --radius-sm: 9px;
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --nav-w: 232px;
+      --speed: .2s;
+      --ease-spring: cubic-bezier(.2, .9, .25, 1.15);
+    }
+    [data-theme="dark"] {
+      --paper: #161310;
+      --paper-dim: #1D1917;
+      --ink: #F3EDE3;
+      --ink-soft: #B9AC9B;
+      --line: rgba(243,237,227,.12);
+      --line-strong: rgba(243,237,227,.24);
+      --maroon: #C0505C;
+      --maroon-deep: #8C2E38;
+      --maroon-tint: rgba(192,80,92,.14);
+      --gold: #D8A94E;
+      --gold-tint: rgba(216,169,78,.14);
+      --green: #57B98C;
+      --green-tint: rgba(87,185,140,.14);
+      --red: #E06B5C;
+      --red-tint: rgba(224,107,92,.16);
+      --surface: #211C18;
+      --shadow: 0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+      --shadow-lg: 0 20px 60px -20px rgba(0,0,0,.7);
+    }
+    *{box-sizing:border-box}html,body{height:100%}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);-webkit-font-smoothing:antialiased;transition:background var(--speed),color var(--speed);background-image:linear-gradient(var(--line)1px,transparent 1px);background-size:100%42px;background-attachment:local}
+    [data-theme="dark"] body{background-image:none}
+    h1,h2,h3,h4{font-family:var(--font-display);margin:0;letter-spacing:-.01em}p{margin:0}button{font-family:inherit}a{color:inherit}::selection{background:var(--maroon);color:#fff}
+    .mono{font-family:var(--font-mono);letter-spacing:.02em}
+    .eyebrow{font-family:var(--font-mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+    :focus-visible{outline:2.5px solid var(--maroon);outline-offset:2px;border-radius:4px}
+    @media(prefers-reduced-motion:reduce){*{animation-duration:.001s!important;transition-duration:.001s!important;scroll-behavior:auto!important}}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:999px;border:1.5px solid var(--line-strong);padding:.62rem 1.15rem;font-weight:600;font-size:.86rem;cursor:pointer;background:transparent;color:var(--ink);transition:transform .12s ease,background .12s,border-color .12s,box-shadow .12s;user-select:none;white-space:nowrap;position:relative;overflow:hidden}
+    .btn:hover{transform:translateY(-1px);border-color:var(--ink)}
+    .btn:active{transform:translateY(0) scale(.97)}
+    .btn-primary{background:var(--maroon);border-color:var(--maroon);color:#fff;box-shadow:var(--shadow)}
+    .btn-primary:hover{background:var(--maroon-deep);border-color:var(--maroon-deep)}
+    .btn-ghost{border-color:transparent}
+    .btn-ghost:hover{background:var(--maroon-tint);border-color:transparent}
+    .btn-danger{color:var(--red);border-color:var(--red)}
+    .btn-danger:hover{background:var(--red-tint)}
+    .btn-sm{padding:.4rem .8rem;font-size:.76rem}
+    .btn-block{width:100%}
+    .btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .btn .spin{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;animation:spin .7s linear infinite;flex:none}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .icon-btn{width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--line-strong);background:var(--surface);cursor:pointer;transition:.12s}
+    .icon-btn:hover{background:var(--maroon-tint);border-color:var(--maroon);transform:translateY(-1px)}
+
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem}
+    .field label{font-size:.76rem;font-weight:600;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.06em}
+    .field input,.field select,.field textarea{font-family:inherit;font-size:.95rem;padding:.72rem .85rem;border-radius:var(--radius-sm);border:1.5px solid var(--line-strong);background:var(--paper);color:var(--ink);outline:none;transition:border-color .12s,box-shadow .12s;width:100%}
+    .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--maroon);box-shadow:0 0 0 3px var(--maroon-tint)}
+    .field input:disabled,.field select:disabled{opacity:.6;cursor:not-allowed}
+    .field textarea{resize:vertical;min-height:70px}
+    .field.has-error input,.field.has-error textarea{border-color:var(--red);box-shadow:0 0 0 3px var(--red-tint)}
+    .field-error{font-size:.74rem;color:var(--red);margin-top:-.15rem}
+    .hint{font-size:.78rem;color:var(--ink-soft)}
+    .checkline{display:flex;align-items:center;gap:.5rem;font-size:.85rem;margin-bottom:1.1rem;cursor:pointer;user-select:none}
+    .checkline input{width:16px;height:16px;accent-color:var(--maroon)}
+
+    .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.28rem .65rem;border-radius:999px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:var(--font-mono)}
+    .badge-staff{background:var(--gold-tint);color:var(--gold)}
+    .badge-student{background:var(--green-tint);color:var(--green)}
+    .badge-admin{background:var(--maroon-tint);color:var(--maroon)}
+    .badge-Approved,.badge-Completed{background:var(--green-tint);color:var(--green)}
+    .badge-Pending{background:var(--gold-tint);color:var(--gold)}
+    .badge-Rejected{background:var(--red-tint);color:var(--red)}
+    .badge-Active{background:var(--green-tint);color:var(--green)}
+    .badge-Inactive{background:var(--red-tint);color:var(--red)}
+    .badge-cat{background:var(--paper-dim);color:var(--ink-soft);border:1px solid var(--line-strong);font-weight:600}
+    .badge-overdue-warn{background:var(--gold-tint);color:var(--gold)}
+    .badge-overdue-crit{background:var(--red-tint);color:var(--red);animation:pulseCrit 1.1s ease infinite}
+    @keyframes pulseCrit{0%,100%{opacity:1}50%{opacity:.5}}
+    .badge-late-return{background:var(--red-tint);color:var(--red)}
+    .strike-pip{display:inline-flex;align-items:center;gap:.3rem;font-family:var(--font-mono);font-size:.72rem;color:var(--red);font-weight:700}
+    .strike-pip .dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex:none}
+
+    .toast-wrap{position:fixed;top:16px;right:16px;z-index:900;display:flex;flex-direction:column;gap:.6rem;max-width:92vw}
+    @media(max-width:600px){.toast-wrap{top:auto;bottom:calc(70px + env(safe-area-inset-bottom));right:10px;left:10px}}
+    .toast{background:var(--ink);color:var(--paper);padding:.8rem 1.1rem;border-radius:var(--radius-sm);box-shadow:var(--shadow-lg);font-size:.86rem;font-weight:500;display:flex;align-items:center;gap:.6rem;animation:toastIn .28s cubic-bezier(.2,.9,.3,1.3);max-width:340px;cursor:pointer}
+    [data-theme="dark"] .toast{background:var(--surface);border:1px solid var(--line)}
+    .toast .t-ico{flex:none;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;background:rgba(255,255,255,.18)}
+    .toast.toast-error{background:var(--red);color:#fff}
+    .toast.toast-success{background:var(--green);color:#fff}
+    @keyframes toastIn{from{opacity:0;transform:translateX(24px) scale(.95)}to{opacity:1;transform:none}}
+    .toast.leaving{animation:toastOut .24s ease forwards}
+    @keyframes toastOut{to{opacity:0;transform:translateX(24px)}}
+
+    .modal-backdrop{position:fixed;inset:0;background:rgba(20,16,12,.55);backdrop-filter:blur(2px);z-index:800;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .18s ease}
+    .modal-backdrop.closing{animation:fadeOut .15s ease forwards}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes fadeOut{to{opacity:0}}
+    .modal{background:var(--surface);border-radius:var(--radius);max-width:520px;width:100%;padding:1.6rem;box-shadow:var(--shadow-lg);animation:modalIn .28s var(--ease-spring);max-height:88vh;overflow:auto;position:relative}
+    .modal-backdrop.closing .modal{animation:modalOut .15s ease forwards}
+    @keyframes modalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:none}}
+    @keyframes modalOut{to{opacity:0;transform:translateY(8px) scale(.97)}}
+    .modal-close{position:absolute;top:.9rem;right:.9rem;width:30px;height:30px;border-radius:50%;border:1.5px solid var(--line-strong);background:var(--paper);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink-soft);transition:.12s;font-size:.9rem;line-height:1}
+    .modal-close:hover{background:var(--red-tint);color:var(--red);border-color:var(--red);transform:rotate(90deg)}
+    .modal-warn-strip{display:flex;align-items:center;gap:.5rem;background:var(--red-tint);color:var(--red);border-radius:var(--radius-sm);padding:.6rem .8rem;font-size:.8rem;font-weight:600;margin-bottom:1rem}
+
+    .done-layer{position:fixed;inset:0;z-index:950;display:flex;align-items:center;justify-content:center;pointer-events:auto;cursor:pointer;background:rgba(20,16,12,0);animation:doneBgIn .4s ease forwards}
+    @keyframes doneBgIn{0%{background:rgba(20,16,12,0)}15%{background:rgba(20,16,12,.28)}75%{background:rgba(20,16,12,.28)}100%{background:rgba(20,16,12,0)}}
+    .done-layer.closing{animation:doneBgOut .18s ease forwards!important}
+    @keyframes doneBgOut{to{background:rgba(20,16,12,0);opacity:0}}
+    .done-card{display:flex;flex-direction:column;align-items:center;gap:.6rem;background:var(--surface);border-radius:20px;padding:1.9rem 2.4rem;box-shadow:var(--shadow-lg);transform:scale(.5) rotate(-6deg);opacity:0;animation:doneCardIn .5s var(--ease-spring) forwards;max-width:92vw}
+    .done-layer.closing .done-card{animation:doneCardOut .16s ease forwards!important}
+    @keyframes doneCardIn{0%{transform:scale(.4) rotate(-10deg);opacity:0}60%{transform:scale(1.08) rotate(2deg);opacity:1}80%{transform:scale(.96) rotate(-1deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+    @keyframes doneCardOut{to{transform:scale(.85);opacity:0}}
+    .done-ring{width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.7rem;border:3px solid currentColor;flex:none;position:relative}
+    .done-ring svg{width:30px;height:30px}
+    .done-ring .tick{stroke-dasharray:40;stroke-dashoffset:40;animation:drawTick .4s ease .2s forwards}
+    .done-ring .cross line{stroke-dasharray:20;stroke-dashoffset:20;animation:drawTick .25s ease forwards}
+    .done-ring .cross line:nth-child(2){animation-delay:.18s}
+    @keyframes drawTick{to{stroke-dashoffset:0}}
+    .done-ok{color:var(--green);background:var(--green-tint)}
+    .done-out{color:var(--maroon);background:var(--maroon-tint)}
+    .done-in{color:var(--gold);background:var(--gold-tint)}
+    .done-bad{color:var(--red);background:var(--red-tint)}
+    .done-label{font-family:var(--font-display);font-weight:700;font-size:1.25rem;text-align:center}
+    .done-sub{font-size:.74rem;color:var(--ink-soft);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.08em;max-width:26ch;text-align:center}
+    .done-ring.burst::after{content:"";position:absolute;inset:-14px;border-radius:50%;border:2px solid currentColor;opacity:.6;animation:burstRing .5s ease-out .1s forwards}
+    @keyframes burstRing{to{transform:scale(1.6);opacity:0}}
+
+    .skeleton{background:linear-gradient(90deg,var(--paper-dim)25%,var(--line)37%,var(--paper-dim)63%);background-size:400%100%;animation:shimmer 1.2s ease infinite;border-radius:8px}
+    @keyframes shimmer{0%{background-position:100%0}100%{background-position:0 0}}
+    .skel-card{height:92px;border-radius:var(--radius)}
+    .skel-line{height:70px;border-radius:var(--radius);margin-bottom:.8rem}
+
+    .gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px 18px;position:relative}
+    .gate-ambient{position:absolute;inset:0;overflow:hidden;z-index:0;pointer-events:none}
+    .gate-ambient span{position:absolute;font-family:var(--font-display);font-size:11rem;color:var(--ink);opacity:.03;font-weight:700;top:-4%;left:-2%;animation:driftText 18s ease-in-out infinite alternate}
+    @keyframes driftText{to{transform:translate(2%,2%) rotate(1deg)}}
+    .gate-shell{position:relative;z-index:1;width:100%;max-width:960px;display:grid;grid-template-columns:1.05fr 1fr;border-radius:22px;overflow:hidden;box-shadow:var(--shadow-lg);animation:riseIn .4s var(--ease-spring)}
+    @keyframes riseIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    .gate-brand{background:linear-gradient(160deg,var(--maroon)0%,var(--maroon-deep)100%);color:#F6EFE4;padding:2.6rem 2.2rem;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}
+    .gate-brand::after{content:"";position:absolute;inset:0;background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.05)0 2px,transparent 2px 26px)}
+    .brand-top{position:relative;z-index:1;display:flex;align-items:center;gap:.75rem}
+    .brand-logo{width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:0 4px 14px rgba(0,0,0,.25);flex:none;padding:6px;box-sizing:border-box}
+    .brand-logo img{width:100%;height:100%;object-fit:contain;display:block}
+    .brand-logo .fallback{font-family:var(--font-display);font-weight:700;color:var(--maroon);font-size:1.3rem}
+    .brand-name{font-family:var(--font-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;opacity:.85}
+    .brand-name b{display:block;font-family:var(--font-display);font-size:1.05rem;letter-spacing:0;text-transform:none;margin-top:.15rem}
+    .brand-mid{position:relative;z-index:1;margin:2.4rem 0}
+    .brand-mid h1{font-size:2.1rem;line-height:1.1;font-weight:600}
+    .brand-mid p{margin-top:.9rem;font-size:.92rem;line-height:1.55;opacity:.88;max-width:34ch}
+    .brand-bottom{position:relative;z-index:1;display:flex;gap:1.6rem;font-family:var(--font-mono);font-size:.72rem;opacity:.85}
+    .brand-bottom div b{display:block;font-size:1.15rem;font-family:var(--font-display)}
+    .gate-form{background:var(--surface);padding:2.6rem 2.3rem;display:flex;flex-direction:column}
+    .gate-form h2{font-size:1.3rem;margin-bottom:.2rem}
+    .gate-form .hint{margin-bottom:1.3rem}
+    .gate-footer{margin-top:1.4rem;display:flex;justify-content:center}
+    .link-btn{background:none;border:none;color:var(--ink-soft);font-size:.78rem;text-decoration:underline;cursor:pointer;padding:0}
+    .link-btn:hover{color:var(--maroon)}
+    .link-btn:disabled{opacity:.5;cursor:not-allowed;text-decoration:none}
+    .error-box{background:var(--red-tint);color:var(--red);padding:.65rem .85rem;border-radius:var(--radius-sm);font-size:.82rem;margin-bottom:1rem;animation:shake .35s}
+    @keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+
+    .pw-toggle-wrap{position:relative}
+    .pw-toggle-wrap input{padding-right:2.6rem!important}
+    .pw-eye{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink-soft);font-size:.78rem;padding:.3rem .45rem;border-radius:6px}
+    .pw-eye:hover{color:var(--maroon);background:var(--maroon-tint)}
+
+    @media(max-width:760px){.gate-shell{grid-template-columns:1fr}.gate-brand{padding:2rem 1.6rem}.brand-mid{margin:1.6rem 0}.brand-mid h1{font-size:1.6rem}.brand-bottom{display:none}.gate-form{padding:2rem 1.6rem 2.2rem}}
+
+    .shell{display:flex;min-height:100vh;animation:fadeSlide .3s ease}
+    @keyframes fadeSlide{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .sidebar{width:var(--nav-w);flex:none;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:1.3rem 1rem;position:sticky;top:0;height:100vh;overflow-y:auto}
+    .side-brand{display:flex;align-items:center;gap:.65rem;padding:.4rem .5rem 1.2rem;border-bottom:1px solid var(--line);margin-bottom:1rem}
+    .side-brand .brand-logo{width:44px;height:44px;border-radius:11px;padding:5px}
+    .side-brand-text{line-height:1.2}
+    .side-brand-text b{display:block;font-family:var(--font-display);font-size:.98rem}
+    .side-brand-text span{font-family:var(--font-mono);font-size:.65rem;color:var(--ink-soft);letter-spacing:.08em}
+    .nav-list{display:flex;flex-direction:column;gap:.1rem;flex:1;overflow:auto}
+    .nav-item{display:flex;align-items:center;gap:.7rem;padding:.65rem .75rem;border-radius:var(--radius-sm);cursor:pointer;font-weight:600;font-size:.87rem;color:var(--ink-soft);transition:background .12s,color .12s,transform .12s}
+    .nav-item:hover{background:var(--paper-dim);color:var(--ink);transform:translateX(2px)}
+    .nav-item.active{background:var(--maroon);color:#fff;box-shadow:var(--shadow)}
+    .nav-item span:first-child{display:inline-block;transition:transform .12s;width:1.1em;text-align:center}
+    .nav-item:hover span:first-child{transform:scale(1.12)}
+    .nav-item .nb{margin-left:auto;background:var(--red);color:#fff;font-size:.66rem;font-weight:800;border-radius:999px;padding:.05rem .4rem;font-family:var(--font-mono)}
+    .nav-item.active .nb{background:rgba(255,255,255,.28)}
+    .side-user{border-top:1px solid var(--line);padding-top:1rem;margin-top:.6rem;display:flex;align-items:center;gap:.6rem}
+    .avatar{width:38px;height:38px;border-radius:50%;background:var(--maroon-tint);color:var(--maroon);display:flex;align-items:center;justify-content:center;font-weight:800;font-family:var(--font-display);flex:none;overflow:hidden}
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    .avatar.lg{width:76px;height:76px;font-size:1.5rem}
+    .side-user-name{font-size:.83rem;font-weight:700;line-height:1.2}
+    .side-user-id{font-family:var(--font-mono);font-size:.68rem;color:var(--ink-soft)}
+    .side-actions{display:flex;gap:.4rem;margin-top:.9rem}
+
+    .main{flex:1;min-width:0;display:flex;flex-direction:column}
+    .topbar{display:none}
+    .content{padding:1.8rem 2.2rem 5rem;max-width:1180px;width:100%;margin:0 auto}
+    .page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+    .page-head h1{font-size:1.65rem}
+    .page-head .hint{margin-top:.25rem}
+
+    .grid{display:grid;gap:1rem}
+    .grid-4{grid-template-columns:repeat(4,1fr)}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .grid-2{grid-template-columns:1.3fr 1fr}
+    @media(max-width:980px){.grid-4{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}}
+    @media(max-width:560px){.grid-4{grid-template-columns:1fr}}
+
+    .stat-card{padding:1.2rem 1.3rem;position:relative;overflow:hidden;transition:transform .12s ease,box-shadow .12s ease;cursor:default}
+    .stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+    .stat-card .eyebrow{margin-bottom:.5rem}
+    .stat-card .num{font-family:var(--font-display);font-size:2.1rem;font-weight:600;font-variant-numeric:tabular-nums}
+    .stat-card .bar{position:absolute;left:0;top:0;bottom:0;width:4px}
+    .stat-card.c-maroon .bar{background:var(--maroon)}
+    .stat-card.c-gold .bar{background:var(--gold)}
+    .stat-card.c-green .bar{background:var(--green)}
+    .stat-card.c-ink .bar{background:var(--ink)}
+    .stat-card.c-red .bar{background:var(--red)}
+
+    .section-card{padding:1.4rem 1.5rem;margin-bottom:1.1rem}
+    .section-card h3{font-size:1.05rem;margin-bottom:.2rem}
+    .section-card .sc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:.6rem}
+
+    .toolbar{display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+    .toolbar input,.toolbar select{padding:.55rem .8rem;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--paper);font-size:.82rem;font-family:inherit;color:var(--ink);transition:border-color .12s,box-shadow .12s}
+    .toolbar input:focus,.toolbar select:focus{outline:none;border-color:var(--maroon);box-shadow:0 0 0 3px var(--maroon-tint)}
+    .search-input{min-width:200px;flex:1}
+    .toolbar-clear{background:none;border:none;color:var(--ink-soft);font-size:.78rem;text-decoration:underline;cursor:pointer}
+    .toolbar-clear:hover{color:var(--maroon)}
+
+    .table-wrap{overflow-x:auto;border-radius:var(--radius-sm);border:1px solid var(--line)}
+    table{width:100%;border-collapse:collapse;font-size:.85rem;min-width:640px}
+    thead th{text-align:left;padding:.75rem .9rem;background:var(--paper-dim);font-family:var(--font-mono);font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);position:sticky;top:0}
+    tbody td{padding:.75rem .9rem;border-top:1px solid var(--line);vertical-align:middle}
+    tbody tr{transition:background .1s}
+    tbody tr:hover{background:var(--maroon-tint)}
+    .row-id{font-family:var(--font-mono);font-size:.76rem;color:var(--ink-soft)}
+    .empty-row{text-align:center;padding:2.4rem 1rem;color:var(--ink-soft)}
+    .empty-row .big{font-size:2rem;display:block;margin-bottom:.4rem}
+    .stack-badges{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center}
+
+    .pass-card{background:linear-gradient(180deg,var(--surface),var(--paper-dim));border:1.5px dashed var(--line-strong);border-radius:var(--radius);padding:1.1rem 1.2rem;display:flex;align-items:center;gap:1rem;margin-bottom:.8rem;position:relative;overflow:hidden;transition:transform .12s ease,box-shadow .12s ease,opacity .2s ease}
+    .pass-card.removing{animation:cardOut .24s ease forwards}
+    @keyframes cardOut{to{opacity:0;transform:scale(.95) translateX(12px)}}
+    .pass-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+    .pass-card.is-overdue-crit{border-color:var(--red)}
+    .pass-card .punch{width:22px;height:22px;border-radius:50%;background:var(--paper);border:1.5px dashed var(--line-strong);position:absolute;left:-11px;top:50%;transform:translateY(-50%)}
+    .pass-card .punch.right{left:auto;right:-11px}
+    .pass-main{flex:1;min-width:0}
+    .pass-main .id{font-family:var(--font-mono);font-size:.72rem;color:var(--ink-soft)}
+    .pass-main .who{font-weight:700;font-size:.98rem;margin:.15rem 0;display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+    .pass-main .meta{font-size:.78rem;color:var(--ink-soft);margin-top:.15rem}
+    .barcode{height:34px;width:74px;flex:none;background:repeating-linear-gradient(90deg,var(--ink)0 2px,transparent 2px 5px,var(--ink)5px 6px,transparent 6px 9px);opacity:.75;border-radius:2px}
+    .pass-actions{display:flex;gap:.4rem;flex:none}
+    @media(max-width:480px){.pass-card{flex-wrap:wrap}.barcode{display:none}.pass-actions{width:100%}.pass-actions .btn{flex:1}}
+
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 1rem}
+    @media(max-width:640px){.form-grid{grid-template-columns:1fr}}
+
+    ol.steps{padding-left:1.2rem;font-size:.86rem;line-height:1.9;color:var(--ink-soft)}
+    ol.steps b{color:var(--ink)}
+
+    .mobile-tabbar{display:none}
+    @media(max-width:880px){.shell{flex-direction:column}.sidebar{display:none}.topbar{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;background:var(--surface);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}.topbar .brand-logo{width:38px;height:38px;border-radius:9px;padding:4px}.topbar-title{font-family:var(--font-display);font-weight:600;font-size:1rem}.content{padding:1.2rem 1rem 5.5rem}.mobile-tabbar{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--line);z-index:60;padding:.4rem .3rem calc(.4rem + env(safe-area-inset-bottom));justify-content:space-around;box-shadow:0 -8px 24px -16px rgba(0,0,0,.3)}.mtab{display:flex;flex-direction:column;align-items:center;gap:.15rem;font-size:.62rem;font-weight:700;color:var(--ink-soft);padding:.35rem .5rem;border-radius:10px;cursor:pointer;transition:color .12s,transform .12s;position:relative}.mtab.active{color:var(--maroon);transform:translateY(-2px)}.mtab .ico{font-size:1.05rem}.mtab .nb{position:absolute;top:0;right:6px;background:var(--red);color:#fff;font-size:.58rem;font-weight:800;border-radius:999px;padding:.02rem .32rem}}
+
+    .fade-enter{animation:fadeSlide .28s ease}
+    ::-webkit-scrollbar{width:9px;height:9px}
+    ::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:99px}
+    .offline-banner{position:fixed;top:0;left:0;right:0;z-index:999;background:var(--red);color:#fff;text-align:center;font-size:.8rem;font-weight:600;padding:.5rem;transform:translateY(-100%);transition:transform .25s ease}
+    .offline-banner.show{transform:translateY(0)}
+    .badge-admin{background:var(--maroon-tint);color:var(--maroon)}
+    .badge-owner{background:var(--gold-tint);color:var(--gold)}
+
+    .chart-container { position: relative; height: 220px; margin: 1rem 0; }
+    .chart-container.doughnut { height: 220px; max-width: 280px; margin: 0 auto; }
+    .chart-container.polar { height: 260px; max-width: 320px; margin: 0 auto; }
+    .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 760px) { .chart-grid { grid-template-columns: 1fr; } }
+
+    .report-btn-wrap { display: flex; gap: .6rem; align-items: center; flex-wrap: wrap; }
+
+    .student-table { margin-top: 1rem; }
+    .student-table th, .student-table td { padding: .4rem .8rem; text-align: left; }
+
+    .overdue-banner{display:flex;align-items:flex-start;gap:.7rem;background:var(--red-tint);color:var(--red);border-radius:var(--radius-sm);padding:.85rem 1rem;margin-bottom:1rem;font-size:.85rem;font-weight:600}
+    .overdue-banner .ico{font-size:1.2rem;flex:none;line-height:1}
+  </style>
+</head>
+<body>
+  <div id="offlineBanner" class="offline-banner">⚠ You're offline — reconnect to keep logging movements.</div>
+  <div id="app"></div>
+  <div id="toastWrap" class="toast-wrap"></div>
+  <div id="modalHost" class="modal-host"></div>
+
+  <script>
+    /* ================================================================
+       CRESCENT SNEC — MOVEMENT REGISTER
+       Staff + Admin + Student History
+       ETA / Overdue engine, categories, late-justification, strikes
+       ================================================================ */
+
+    // Replace with your deployed Apps Script Web App URL.
+    const API_URL = "https://script.google.com/macros/s/AKfycby5dTzXk9xNvbfEoyL8w0wQcTXV1qUoIen-TkxFt5p-5ECBc3QAlQaCW3QgFIl5brmb_w/exec";
+
+    const LOGO_URL = "https://i.postimg.cc/cJLhLk7x/SNEC-Logo-(2).png";
+    const CAMPUS_NAME = "Crescent SNEC";
+    const CAMPUS_SUB = "Velimukku Campus · Movement Register";
+
+    // Keep in sync with CATEGORIES in the Apps Script backend.
+    const CATEGORIES = ['Academic', 'Medical', 'Personal', 'Family', 'Emergency', 'Other'];
+    const CATEGORY_COLORS = ['#7A1F2B', '#B8842E', '#2F7D5B', '#4C6B8A', '#B23A2E', '#8C6E4E'];
+    const DEFAULT_EXPECTED_HOURS = 2;
+
+    // ─── Navigation ──────────────────────────────────────────────────────
+    const NAV_STAFF = [
+      { id: 'overview', label: 'Overview', ico: '◆' },
+      { id: 'log', label: 'Log Movement', ico: '⤴' },
+      { id: 'approvals', label: 'Approvals', ico: '✓', badgeKey: 'pending' },
+      { id: 'board', label: 'Live Board', ico: '◎', badgeKey: 'overdue' },
+      { id: 'ledger', label: 'Full Ledger', ico: '▤' },
+      { id: 'users', label: 'Manage Users', ico: '☺' },
+      { id: 'profile', label: 'Profile', ico: '●' },
+    ];
+
+    const NAV_ADMIN = [
+      { id: 'overview', label: 'Overview', ico: '◆' },
+      { id: 'log', label: 'Log Movement', ico: '⤴' },
+      { id: 'approvals', label: 'Approvals', ico: '✓', badgeKey: 'pending' },
+      { id: 'board', label: 'Live Board', ico: '◎', badgeKey: 'overdue' },
+      { id: 'ledger', label: 'Full Ledger', ico: '▤' },
+      { id: 'users', label: 'Manage Users', ico: '☺' },
+      { id: 'analytics', label: 'Analytics', ico: '📊' },
+      { id: 'profile', label: 'Profile', ico: '●' },
+    ];
+
+    const NAV_STUDENT = [
+      { id: 'status', label: 'My Status', ico: '◆' },
+      { id: 'history', label: 'History', ico: '▤' },
+      { id: 'profile', label: 'Profile', ico: '●' },
+    ];
+
+    const MOBILE_PRIMARY_STAFF = ['overview', 'log', 'approvals', 'board'];
+    const MOBILE_PRIMARY_ADMIN = ['overview', 'log', 'approvals', 'analytics'];
+    const MOBILE_PRIMARY_STUDENT = ['status', 'history', 'profile'];
+
+    function currentNav() {
+      const u = state.user;
+      if (!u) return NAV_STAFF;
+      if (u.role === 'admin') return NAV_ADMIN;
+      if (u.role === 'student') return NAV_STUDENT;
+      return NAV_STAFF;
+    }
+    function currentMobilePrimary() {
+      const u = state.user;
+      if (!u) return MOBILE_PRIMARY_STAFF;
+      if (u.role === 'admin') return MOBILE_PRIMARY_ADMIN;
+      if (u.role === 'student') return MOBILE_PRIMARY_STUDENT;
+      return MOBILE_PRIMARY_STAFF;
+    }
+
+    // ─── State ──────────────────────────────────────────────────────────
+    const state = {
+      theme: localStorage.getItem('csnec_theme') || 'light',
+      token: null,
+      user: null,
+      view: 'gate',
+      gateError: '',
+      tab: 'overview',
+      movements: [],
+      users: [],
+      stats: {},
+      analytics: null,
+      myStatus: null,
+      myStrikes: 0,
+      studentHistory: [],
+      studentHistoryStrikes: 0,
+      loading: false,
+      tabLoading: false,
+      modal: null,
+      filters: { status: 'All', q: '', role: 'All', category: 'All' },
+      showPw: false,
+      _jsonpId: 0,
+      _debounce: null,
+      _overdueTick: null,
+      charts: {},
+      savingUser: false,
+    };
+    document.documentElement.setAttribute('data-theme', state.theme);
+
+    try {
+      const sess = JSON.parse(localStorage.getItem('csnec_session') || 'null');
+      if (sess && sess.token && sess.user) {
+        state.token = sess.token;
+        state.user = sess.user;
+        state.view = 'app';
+        state.tab = sess.user.role === 'student' ? 'status' : 'overview';
+      }
+    } catch (e) {}
+
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+    function fmtDT(iso) { if (!iso) return '—'; const d = new Date(iso); if (isNaN(d)) return '—'; return d.toLocaleString(undefined, { month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }); }
+    function fmtTime(iso) { if (!iso) return '—'; const d = new Date(iso); if (isNaN(d)) return '—'; return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }); }
+    function initials(name) { return String(name || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+    function saveSettings() { localStorage.setItem('csnec_theme', state.theme); }
+    function saveSession() {
+      if (state.token && state.user) localStorage.setItem('csnec_session', JSON.stringify({ token: state.token, user: state.user }));
+      else localStorage.removeItem('csnec_session');
+    }
+
+    // Photo feature removed: avatars always use initials.
+    function avatarHtml(user, extraClass) {
+      const cls = 'avatar' + (extraClass ? ' ' + extraClass : '');
+      return `<div class="${cls}" aria-hidden="true">${esc(initials(user && user.name))}</div>`;
+    }
+
+    // ─── Overdue / lateness helpers (client mirrors of backend logic) ───
+    function overdueInfo(m) {
+      if (!m || m.status !== 'Approved' || !m.expectedReturn) return null;
+      const exp = new Date(m.expectedReturn);
+      if (isNaN(exp)) return null;
+      const diffMs = Date.now() - exp.getTime();
+      if (diffMs <= 0) return null;
+      const hrs = diffMs / 3600000;
+      if (hrs > 3) return { level: 'crit', label: 'Overdue ' + Math.floor(hrs) + 'h' };
+      const mins = Math.round(diffMs / 60000);
+      const label = mins >= 60 ? ('Late ' + Math.floor(mins / 60) + 'h ' + (mins % 60) + 'm') : ('Late ' + mins + 'm');
+      return { level: 'warn', label };
+    }
+    function isLateReturnClient(m) {
+      if (!m || m.status !== 'Completed' || !m.timeIn || !m.expectedReturn) return false;
+      const inn = new Date(m.timeIn), exp = new Date(m.expectedReturn);
+      if (isNaN(inn) || isNaN(exp)) return false;
+      return inn > exp;
+    }
+    function overdueBadgeHtml(m) {
+      const info = overdueInfo(m);
+      if (!info) return '';
+      const cls = info.level === 'crit' ? 'badge-overdue-crit' : 'badge-overdue-warn';
+      return `<span class="badge ${cls}">${esc(info.label)}</span>`;
+    }
+    function lateReturnBadgeHtml(m) {
+      return isLateReturnClient(m) ? `<span class="badge badge-late-return">Late Return</span>` : '';
+    }
+    function categoryBadgeHtml(m) {
+      return `<span class="badge badge-cat">${esc(m.category || 'Other')}</span>`;
+    }
+    function categoryOptionsHtml(selected) {
+      return CATEGORIES.map(c => `<option value="${c}" ${selected === c ? 'selected' : ''}>${c}</option>`).join('');
+    }
+    function strikePipHtml(count) {
+      if (!count) return '';
+      return `<span class="strike-pip"><span class="dot"></span>${count} strike${count === 1 ? '' : 's'}</span>`;
+    }
+
+    // ─── Online / Offline ──────────────────────────────────────────────
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (!banner) return;
+      banner.classList.toggle('show', !navigator.onLine);
+    }
+    window.addEventListener('online', () => { updateOnlineStatus(); toast('Back online.', 'success'); if (state.view === 'app') loadAll({force:true}); });
+    window.addEventListener('offline', () => { updateOnlineStatus(); toast('You are offline.', 'error'); });
+
+    function toast(msg, type = '') {
+      const wrap = document.getElementById('toastWrap');
+      const el = document.createElement('div');
+      el.className = 'toast' + (type ? ' toast-' + type : '');
+      const ico = type === 'success' ? '✓' : type === 'error' ? '!' : '•';
+      el.innerHTML = `<span class="t-ico">${ico}</span><span></span>`;
+      el.querySelector('span:last-child').textContent = msg;
+      wrap.appendChild(el);
+      const remove = () => { el.classList.add('leaving'); setTimeout(() => el.remove(), 240); };
+      const timer = setTimeout(remove, 3200);
+      el.addEventListener('click', () => { clearTimeout(timer); remove(); });
+    }
+
+    // ─── "Done" overlay ────────────────────────────────────────────────
+    let doneLayerEl = null;
+    let doneTimer = null;
+    const DONE_ICONS = {
+      approve: { cls: 'done-ok', label: 'Approved', svg: `<svg viewBox="0 0 24 24" fill="none"><path class="tick" d="M4 12.5l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+      reject: { cls: 'done-bad', label: 'Rejected', svg: `<svg viewBox="0 0 24 24" fill="none" class="cross"><line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>` },
+      out: { cls: 'done-out', label: 'Marked Out', svg: `<svg viewBox="0 0 24 24" fill="none"><path class="tick" d="M4 12h13M11 6l6 6-6 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+      pending: { cls: 'done-out', label: 'Sent to Approvals', svg: `<svg viewBox="0 0 24 24" fill="none"><circle class="tick" cx="12" cy="12" r="7" stroke="currentColor" stroke-width="2.4"/></svg>` },
+      in: { cls: 'done-in', label: 'Marked In', svg: `<svg viewBox="0 0 24 24" fill="none"><path class="tick" d="M4 12.5l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+      ok: { cls: 'done-ok', label: 'Done', svg: `<svg viewBox="0 0 24 24" fill="none"><path class="tick" d="M4 12.5l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+      welcome: { cls: 'done-ok', label: 'Welcome back', svg: `<svg viewBox="0 0 24 24" fill="none"><path class="tick" d="M4 12.5l5 5L20 6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
+    };
+    function closeDoneOverlay() {
+      if (!doneLayerEl) return;
+      clearTimeout(doneTimer);
+      const el = doneLayerEl;
+      doneLayerEl = null;
+      el.classList.add('closing');
+      setTimeout(() => el.remove(), 180);
+    }
+    function doneOverlay(kind, sub, ms) {
+      closeDoneOverlay();
+      const d = DONE_ICONS[kind] || DONE_ICONS.ok;
+      const layer = document.createElement('div');
+      layer.className = 'done-layer';
+      layer.innerHTML = `<div class="done-card"><div class="done-ring burst ${d.cls}">${d.svg}</div><div class="done-label">${esc(d.label)}</div>${sub ? `<div class="done-sub">${esc(sub)}</div>` : ''}</div>`;
+      layer.addEventListener('click', closeDoneOverlay);
+      document.body.appendChild(layer);
+      doneLayerEl = layer;
+      doneTimer = setTimeout(closeDoneOverlay, ms || 1500);
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (doneLayerEl) return closeDoneOverlay();
+      if (state.modal) return closeModal();
+    });
+
+    // ─── JSONP API Client ──────────────────────────────────────────────
+    function apiOnce_(action, payload, timeoutMs) {
+      return new Promise((resolve) => {
+        const cb = '_jsonp_' + (++state._jsonpId) + '_' + Date.now().toString(36);
+        const params = new URLSearchParams();
+        params.set('action', action);
+        if (state.token) params.set('token', state.token);
+        for (const [k, v] of Object.entries(payload)) if (v !== undefined && v !== null) params.set(k, String(v));
+        params.set('callback', cb);
+
+        let settled = false;
+        const cleanup = () => { delete window[cb]; if (script.parentNode) script.parentNode.removeChild(script); clearTimeout(timer); };
+        const finish = (data) => { if (settled) return; settled = true; cleanup(); resolve(data); };
+        window[cb] = finish;
+
+        const script = document.createElement('script');
+        script.src = API_URL + '?' + params.toString();
+        script.onerror = () => finish(null);
+        const timer = setTimeout(() => finish(null), timeoutMs);
+        document.head.appendChild(script);
+      });
+    }
+
+    // Fast API wrapper: one request only. Avoids the old 20s + 20s retry
+    // which could make a slow Apps Script deployment feel like a 40s hang.
+    async function api(action, payload = {}) {
+      if (!navigator.onLine) return { ok: false, message: 'You are offline. Check your connection and try again.' };
+      const data = await apiOnce_(action, payload, 15000);
+      if (!data) return { ok: false, message: 'The server is taking too long. Please try again.' };
+      return data;
+    }
+
+    const lazyScripts = {};
+    function loadScriptOnce(url, globalName) {
+      if (window[globalName]) return Promise.resolve(window[globalName]);
+      if (lazyScripts[url]) return lazyScripts[url];
+      lazyScripts[url] = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.async = true;
+        script.onload = () => resolve(window[globalName]);
+        script.onerror = () => reject(new Error('Could not load required library.'));
+        document.head.appendChild(script);
+      });
+      return lazyScripts[url];
+    }
+    function ensureChartJs() {
+      return loadScriptOnce('https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js', 'Chart');
+    }
+    function ensurePdfLibs() {
+      return Promise.all([
+        loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js', 'html2canvas'),
+        loadScriptOnce('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'jspdf')
+      ]);
+    }
+
+    function animateCounters(root = document) {
+      root.querySelectorAll('[data-count]').forEach(node => {
+        const target = parseInt(node.dataset.count, 10) || 0;
+        const dur = 400, start = performance.now();
+        function step(now) {
+          const p = Math.min(1, (now - start) / dur);
+          const eased = 1 - Math.pow(1 - p, 3);
+          node.textContent = Math.round(eased * target);
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      });
+    }
+
+    // ─── Live aging ticker: re-renders overdue badges every 30s ────────
+    let liveRefreshInFlight = false;
+    async function refreshLiveData() {
+      if (liveRefreshInFlight || state.view !== 'app' || !state.user || state.user.role === 'student') return;
+      liveRefreshInFlight = true;
+      try {
+        const res = await api('getInitialData', {});
+        if (res.authError) return doLogout(true);
+        if (res.ok) {
+          state.movements = res.movements || [];
+          state.users = res.users || [];
+          state.stats = res.stats || {};
+          refreshTabContent(true);
+        }
+      } finally { liveRefreshInFlight = false; }
+    }
+    function startOverdueTicker() {
+      clearInterval(state._overdueTick);
+      state._overdueTick = setInterval(() => {
+        if (state.view !== 'app') return;
+        if (['board', 'overview', 'approvals', 'ledger'].includes(state.tab)) refreshLiveData();
+        else if (state.tab === 'status' && state.user && state.user.role === 'student') loadAll({force:true});
+      }, 30000);
+    }
+
+    // ─── Render ─────────────────────────────────────────────────────────
+    function render() {
+      const app = document.getElementById('app');
+      app.innerHTML = state.view === 'gate' ? renderGate() : renderShell();
+      syncModal();
+      updateOnlineStatus();
+      animateCounters(app);
+      if (state.view === 'app' && state.tab === 'analytics' && state.user && state.user.role === 'admin') {
+        setTimeout(() => initAnalyticsCharts(), 50);
+      }
+    }
+
+    // ─── Modal ──────────────────────────────────────────────────────────
+    let modalHostEl = null;
+    function syncModal() {
+      if (!state.modal) { if (modalHostEl) { modalHostEl.remove(); modalHostEl = null; } return; }
+      if (modalHostEl) modalHostEl.remove();
+      modalHostEl = document.createElement('div');
+      modalHostEl.id = 'modalHost';
+      document.body.appendChild(modalHostEl);
+      renderModalInto();
+    }
+    function openModal(name, data) { state.modal = { name, data }; syncModal(); }
+    function closeModal() {
+      state.modal = null;
+      if (!modalHostEl) return;
+      const backdrop = modalHostEl.querySelector('.modal-backdrop');
+      const host = modalHostEl;
+      modalHostEl = null;
+      if (backdrop) { backdrop.classList.add('closing'); setTimeout(() => host.remove(), 160); }
+      else host.remove();
+    }
+
+    // ─── GATE (Login) ──────────────────────────────────────────────────
+    function renderGate() {
+      return `
+      <div class="gate">
+        <div class="gate-ambient"><span>SNEC</span></div>
+        <div class="gate-shell">
+          <div class="gate-brand">
+            <div class="brand-top">
+              <div class="brand-logo">${logoMarkup()}</div>
+              <div class="brand-name">Est. Register<b>${esc(CAMPUS_NAME)}</b></div>
+            </div>
+            <div class="brand-mid">
+              <h1>Movement Register</h1>
+              <p>A single ledger for every student who steps off campus. Staff log, approve and track every gate movement from one place, in real time — with overdue alerts built in.</p>
+            </div>
+            <div class="brand-bottom">
+              <div><b>24/7</b>Gate logging</div>
+              <div><b>1</b>Unified login</div>
+              <div><b>Live</b>Overdue alerts</div>
+            </div>
+          </div>
+          <div class="gate-form">
+            <h2>Sign in</h2>
+            <p class="hint">Staff, Admin &amp; Students all use the same login.</p>
+            ${state.gateError ? `<div class="error-box" role="alert">${esc(state.gateError)}</div>` : ''}
+            <form data-form="login" novalidate>
+              <div class="field">
+                <label for="loginId">ID</label>
+                <input id="loginId" class="mono" name="id" placeholder="e.g. STAFF001, ADMIN001, or CSE010" autocomplete="username" required />
+              </div>
+              <div class="field">
+                <label for="loginPw">Password</label>
+                <div class="pw-toggle-wrap">
+                  <input id="loginPw" type="${state.showPw ? 'text' : 'password'}" name="password" placeholder="••••••••" autocomplete="current-password" required />
+                  <button type="button" class="pw-eye" data-action="toggleShowPw">${state.showPw ? 'Hide' : 'Show'}</button>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-block" type="submit" ${state.loading?'disabled':''}>${state.loading?'<span class="spin"></span> Signing in…':'Sign in'}</button>
+            </form>
+            <div class="gate-footer">
+              <button class="link-btn" data-action="toggleTheme">${state.theme==='dark'?'☀ Light mode':'● Dark mode'}</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    function logoMarkup() {
+      return `<img src="${LOGO_URL}" alt="Crescent SNEC logo" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'fallback',textContent:'CS'}))" />`;
+    }
+
+    // ─── APP SHELL ──────────────────────────────────────────────────────
+    function navBadge(n) {
+      if (!n.badgeKey) return '';
+      const s = state.stats || {};
+      let val = 0;
+      if (n.badgeKey === 'pending') val = s.pending ?? state.movements.filter(m=>m.status==='Pending').length;
+      else if (n.badgeKey === 'overdue') val = s.overdueNow ?? state.movements.filter(overdueInfo).length;
+      return val > 0 ? `<span class="nb">${val}</span>` : '';
+    }
+
+    function renderShell() {
+      const u = state.user;
+      if (!u) { state.view = 'gate'; return renderGate(); }
+      const nav = currentNav();
+      return `
+      <div class="shell">
+        <aside class="sidebar">
+          <div class="side-brand">
+            <div class="brand-logo">${logoMarkup()}</div>
+            <div class="side-brand-text"><b>${esc(CAMPUS_NAME)}</b><span>${esc(CAMPUS_SUB)}</span></div>
+          </div>
+          <nav class="nav-list">
+            ${nav.map(n=>`<div class="nav-item ${state.tab===n.id?'active':''}" data-action="setTab" data-tab="${n.id}"><span>${n.ico}</span>${n.label}${navBadge(n)}</div>`).join('')}
+          </nav>
+          <div class="side-user">
+            ${avatarHtml(u)}
+            <div style="flex:1;min-width:0;">
+              <div class="side-user-name">${esc(u.name)}</div>
+              <div class="side-user-id mono">${esc(u.id)} · <span class="badge badge-${u.role}">${u.role}</span></div>
+            </div>
+          </div>
+          <div class="side-actions">
+            <button class="btn btn-ghost btn-sm" style="flex:1" data-action="toggleTheme">${state.theme==='dark'?'☀ Light':'● Dark'}</button>
+            <button class="btn btn-ghost btn-sm" style="flex:1" data-action="logout">⏻ Logout</button>
+          </div>
+        </aside>
+
+        <div class="topbar">
+          <div style="display:flex;align-items:center;gap:.6rem;">
+            <div class="brand-logo">${logoMarkup()}</div>
+            <div class="topbar-title">${esc(CAMPUS_NAME)}</div>
+          </div>
+          <div style="display:flex;gap:.4rem;">
+            <button class="icon-btn" data-action="toggleTheme">${state.theme==='dark'?'☀':'●'}</button>
+            <button class="icon-btn" data-action="logout">⏻</button>
+          </div>
+        </div>
+
+        <main class="main">
+          <div class="content fade-enter" id="tabContent">${state.tabLoading ? tplSkeleton() : renderTab()}</div>
+        </main>
+
+        <nav class="mobile-tabbar">
+          ${nav.filter(n=>currentMobilePrimary().includes(n.id)).map(n=>`<div class="mtab ${state.tab===n.id?'active':''}" data-action="setTab" data-tab="${n.id}"><span class="ico">${n.ico}</span>${n.label.split(' ')[0]}${navBadge(n)}</div>`).join('')}
+          <div class="mtab ${state.modal&&state.modal.name==='more'?'active':''}" data-action="openMoreSheet"><span class="ico">⋯</span>More</div>
+        </nav>
+      </div>`;
+    }
+
+    function tplSkeleton() {
+      return `
+      <div class="page-head"><div><div class="skeleton" style="width:180px;height:28px;margin-bottom:8px;"></div><div class="skeleton" style="width:260px;height:14px;"></div></div></div>
+      <div class="grid grid-4">${Array.from({length:4}).map(()=>`<div class="skeleton skel-card"></div>`).join('')}</div>
+      <div style="margin-top:1.1rem;">${Array.from({length:3}).map(()=>`<div class="skeleton skel-line"></div>`).join('')}</div>`;
+    }
+
+    function renderTab() {
+      const u = state.user;
+      if (u && u.role === 'student') {
+        if (state.tab === 'status') return tplStudentStatus();
+        if (state.tab === 'history') return tplStudentHistory();
+        if (state.tab === 'profile') return tplProfile();
+        return tplStudentStatus();
+      }
+      switch (state.tab) {
+        case 'overview': return tplOverview();
+        case 'log': return tplLogMovement();
+        case 'approvals': return tplApprovals();
+        case 'board': return tplBoard();
+        case 'ledger': return tplLedger();
+        case 'users': return tplUsers();
+        case 'analytics': return tplAnalytics();
+        case 'profile': return tplProfile();
+        default: return tplOverview();
+      }
+    }
+
+    function refreshTabContent(skipAnim) {
+      const content = document.getElementById('tabContent');
+      if (!content) return;
+      content.innerHTML = state.tabLoading ? tplSkeleton() : renderTab();
+      if (!skipAnim) content.classList.add('fade-enter');
+      animateCounters(content);
+      refreshNavBadges();
+      if (state.tab === 'analytics' && state.user && state.user.role === 'admin') {
+        setTimeout(initAnalyticsCharts, 150);
+      }
+      if (state.user && state.user.role === 'student' && state.tab === 'history' && state.studentHistory.length === 0) {
+        loadStudentHistory();
+      }
+    }
+
+    function refreshTabContentPreserveFocus() {
+      const content = document.getElementById('tabContent');
+      if (!content) return;
+      const active = document.activeElement;
+      let restore = null;
+      if (active && content.contains(active) && active.dataset && active.dataset.filter) {
+        restore = { name: active.dataset.filter, selStart: active.selectionStart, selEnd: active.selectionEnd };
+      }
+      content.innerHTML = state.tabLoading ? tplSkeleton() : renderTab();
+      animateCounters(content);
+      refreshNavBadges();
+      if (restore) {
+        const el = content.querySelector(`[data-filter="${restore.name}"]`);
+        if (el) {
+          el.focus();
+          if (typeof restore.selStart === 'number' && el.setSelectionRange) {
+            try { el.setSelectionRange(restore.selStart, restore.selEnd); } catch (e) {}
+          }
+        }
+      }
+      if (state.tab === 'analytics' && state.user && state.user.role === 'admin') {
+        setTimeout(initAnalyticsCharts, 150);
+      }
+      if (state.user && state.user.role === 'student' && state.tab === 'history' && state.studentHistory.length === 0) {
+        loadStudentHistory();
+      }
+    }
+
+    function refreshNavBadges() {
+      document.querySelectorAll('.nav-item, .mtab').forEach(el => {
+        const tabId = el.dataset.tab;
+        const n = currentNav().find(x => x.id === tabId);
+        if (!n || !n.badgeKey) return;
+        const existing = el.querySelector('.nb');
+        const html = navBadge(n);
+        if (html && !existing) el.insertAdjacentHTML('beforeend', html);
+        else if (!html && existing) existing.remove();
+        else if (html && existing) existing.outerHTML = html;
+      });
+    }
+
+    // ─── Shared components ─────────────────────────────────────────────
+    function statCards(extra) {
+      const s = state.stats || {};
+      const cards = [
+        { label: 'Currently Out', val: s.currentlyOut ?? 0, c: 'maroon' },
+        { label: 'Overdue Right Now', val: s.overdueNow ?? 0, c: 'red' },
+        { label: 'Pending Approval', val: s.pending ?? 0, c: 'gold' },
+        { label: "Today's Movements", val: s.today ?? 0, c: 'ink' },
+        { label: 'Completed (Returned)', val: s.completed ?? 0, c: 'green' },
+        { label: 'Total Students', val: s.totalStudents ?? 0, c: 'maroon' },
+        { label: 'Total Staff', val: s.totalStaff ?? 0, c: 'gold' },
+      ];
+      if (extra) cards.push(...extra);
+      return `<div class="grid grid-4">${cards.map((c,i)=>`
+        <div class="card stat-card c-${c.c}" style="animation-delay:${i*40}ms"><div class="bar"></div><div class="eyebrow">${c.label}</div><div class="num"><span data-count="${c.val}">0</span></div></div>
+      `).join('')}</div>`;
+    }
+
+    function passCard(m, opts = {}) {
+      const canReturn = opts.canReturn && m.status === 'Approved';
+      const info = overdueInfo(m);
+      const cardClass = info && info.level === 'crit' ? ' is-overdue-crit' : '';
+      return `
+      <div class="pass-card${cardClass}" data-movement-card="${esc(m.movementId)}">
+        <div class="punch"></div><div class="punch right"></div>
+        <div class="barcode"></div>
+        <div class="pass-main">
+          <div class="id mono">${esc(m.movementId)}</div>
+          <div class="who">${esc(m.name)} <span class="badge badge-${m.role}">${m.role}</span>${categoryBadgeHtml(m)}${overdueBadgeHtml(m)}${lateReturnBadgeHtml(m)}</div>
+          <div class="meta">${esc(m.destination||'—')} · ${esc(m.reason||'No reason given')}</div>
+          <div class="meta">Out ${fmtTime(m.timeOut)}${m.expectedReturn?(' · Due back '+fmtTime(m.expectedReturn)):''}${m.timeIn?(' · In '+fmtTime(m.timeIn)):''} · <span class="badge badge-${m.status}">${m.status}</span>${m.loggedBy?` · Logged by ${esc(m.loggedBy)}`:''}</div>
+        </div>
+        <div class="pass-actions">
+          ${canReturn ? `<button class="btn ${info?'btn-danger':'btn-primary'} btn-sm" data-action="markReturn" data-id="${esc(m.movementId)}">Mark In</button>` : ''}
+        </div>
+      </div>`;
+    }
+
+    function filterRows(rows) {
+      let out = rows;
+      if (state.filters.status !== 'All') out = out.filter(r => r.status === state.filters.status);
+      if (state.filters.category && state.filters.category !== 'All') out = out.filter(r => (r.category || 'Other') === state.filters.category);
+      if (state.filters.q) {
+        const q = state.filters.q.toLowerCase();
+        out = out.filter(r => (r.name || '').toLowerCase().includes(q) || (r.userId || '').toLowerCase().includes(q) || (r.movementId || '').toLowerCase().includes(q) || (r.destination || '').toLowerCase().includes(q));
+      }
+      return out;
+    }
+
+    function ledgerTable(rows, opts = {}) {
+      if (!rows.length) return `<div class="empty-row"><span class="big">▤</span>No movement records match your filters.</div>`;
+      return `<div class="table-wrap"><table>
+        <thead><tr><th>ID</th><th>Name</th><th>Role</th><th>Category</th><th>Destination</th><th>Out</th><th>Due Back</th><th>In</th><th>Status</th>${opts.actions?'<th></th>':''}</tr></thead>
+        <tbody>${rows.map((m,i)=>`
+          <tr style="animation-delay:${Math.min(i,12)*25}ms" data-movement-row="${esc(m.movementId)}">
+            <td class="row-id">${esc(m.movementId)}</td>
+            <td>${esc(m.name)}<div class="hint">${esc(m.userId)}</div></td>
+            <td><span class="badge badge-${m.role}">${m.role}</span></td>
+            <td>${categoryBadgeHtml(m)}</td>
+            <td>${esc(m.destination||'—')}</td>
+            <td>${fmtDT(m.timeOut)}</td>
+            <td>${fmtDT(m.expectedReturn)}</td>
+            <td>${m.timeIn ? fmtDT(m.timeIn) : '—'}</td>
+            <td><div class="stack-badges"><span class="badge badge-${m.status}">${m.status}</span>${overdueBadgeHtml(m)}${lateReturnBadgeHtml(m)}</div></td>
+            ${opts.actions ? `<td style="white-space:nowrap;">
+              ${m.status==='Pending' ? `<button class="btn btn-sm btn-primary" data-action="approve" data-id="${esc(m.movementId)}">Approve</button>
+                <button class="btn btn-sm btn-danger" data-action="reject" data-id="${esc(m.movementId)}">Reject</button>` : ''}
+              ${m.status==='Approved' ? `<button class="btn btn-sm btn-ghost" data-action="markReturn" data-id="${esc(m.movementId)}">Mark In</button>` : ''}
+            </td>` : ''}
+          </tr>`).join('')}</tbody>
+      </table></div>`;
+    }
+
+    // ─── TAB: Student Status ───────────────────────────────────────────
+    function tplStudentStatus() {
+      const u = state.user;
+      const cur = state.myStatus;
+      const statusMap = {
+        Approved: { label: 'Currently Out', c: 'maroon', ico: '⤴' },
+        Pending: { label: 'Awaiting Approval', c: 'gold', ico: '…' },
+        Completed: { label: 'Back On Campus', c: 'green', ico: '✓' },
+        Rejected: { label: 'Last Request Rejected', c: 'ink', ico: '✕' },
+      };
+      const s = cur ? (statusMap[cur.status] || { label: cur.status, c: 'ink', ico: '•' }) : null;
+      const info = cur ? overdueInfo(Object.assign({}, cur, { userId: u.id })) : null;
+
+      return `
+      <div class="page-head"><div><h1>Hi, ${esc(u.name.split(' ')[0])}</h1><p class="hint">Your current gate pass status.</p></div></div>
+      ${state.myStrikes > 0 ? `
+        <div class="card stat-card c-red" style="padding:1rem 1.3rem;margin-bottom:1.1rem;">
+          <div class="bar"></div>
+          <div class="eyebrow">⚠ Late Returns</div>
+          <div class="num" style="font-size:1.5rem;">${strikePipHtml(state.myStrikes)}</div>
+          <p class="hint" style="margin-top:.3rem;">Passes returned after their expected time. Try to return on time to keep your record clean.</p>
+        </div>
+      ` : ''}
+      ${info ? `<div class="overdue-banner"><span class="ico">⏰</span><div>Your pass is <b>${esc(info.label.toLowerCase())}</b> — staff will ask for a reason when you're marked back in.</div></div>` : ''}
+      ${cur ? `
+      <div class="card stat-card c-${s.c}" style="padding:1.6rem;margin-bottom:1.1rem;">
+        <div class="bar"></div>
+        <div class="eyebrow">${s.ico} Current Status</div>
+        <div class="num" style="font-size:1.6rem;margin:.3rem 0 .8rem;">${esc(s.label)}</div>
+        <div class="hint">Category: <b style="color:var(--ink)">${esc(cur.category || 'Other')}</b></div>
+        <div class="hint">Destination: <b style="color:var(--ink)">${esc(cur.destination || '—')}</b></div>
+        <div class="hint">Reason: ${esc(cur.reason || '—')}</div>
+        <div class="hint">Out: ${fmtDT(cur.timeOut)}${cur.expectedReturn ? ' · Due back: ' + fmtDT(cur.expectedReturn) : ''}${cur.timeIn ? ' · In: ' + fmtDT(cur.timeIn) : ''}</div>
+        ${cur.remarks ? `<div class="hint">Staff remarks: ${esc(cur.remarks)}</div>` : ''}
+        ${cur.lateReason ? `<div class="hint">Late reason on file: ${esc(cur.lateReason)}</div>` : ''}
+      </div>
+      ` : `
+      <div class="empty-row card" style="padding:2.4rem;"><span class="big">◎</span>No gate pass on record for you yet.</div>
+      `}
+      <div class="section-card">
+        <h3>About this view</h3>
+        <p class="hint" style="margin-top:.5rem;line-height:1.6;">
+          This shows your most recent movement. For your complete history and strike record, visit the <b>History</b> tab.
+        </p>
+      </div>`;
+    }
+
+    // ─── TAB: Student History ───────────────────────────────────────────
+    function tplStudentHistory() {
+      const rows = state.studentHistory || [];
+      let filtered = rows;
+      if (state.filters.status !== 'All') filtered = filtered.filter(r => r.status === state.filters.status);
+      if (state.filters.category && state.filters.category !== 'All') filtered = filtered.filter(r => (r.category || 'Other') === state.filters.category);
+      if (state.filters.q) {
+        const q = state.filters.q.toLowerCase();
+        filtered = filtered.filter(r => (r.destination || '').toLowerCase().includes(q) || (r.reason || '').toLowerCase().includes(q));
+      }
+      const hasFilters = state.filters.q || state.filters.status !== 'All' || (state.filters.category && state.filters.category !== 'All');
+
+      return `
+      <div class="page-head"><div><h1>My Movement History</h1><p class="hint">All your past gate passes.</p></div></div>
+      ${state.studentHistoryStrikes > 0 ? `
+        <div class="card stat-card c-red" style="padding:1rem 1.3rem;margin-bottom:1.1rem;">
+          <div class="bar"></div>
+          <div class="eyebrow">⚠ Total Strikes</div>
+          <div class="num"><span data-count="${state.studentHistoryStrikes}">0</span></div>
+          <p class="hint" style="margin-top:.3rem;">Number of passes returned after the expected time.</p>
+        </div>
+      ` : ''}
+      <div class="toolbar">
+        <input class="search-input" placeholder="Search destination, reason…" value="${esc(state.filters.q)}" data-filter="q" />
+        <select data-filter="status">${['All','Pending','Approved','Rejected','Completed'].map(s=>`<option ${state.filters.status===s?'selected':''}>${s}</option>`).join('')}</select>
+        <select data-filter="category"><option ${(!state.filters.category||state.filters.category==='All')?'selected':''}>All</option>${categoryOptionsHtml(state.filters.category)}</select>
+        ${hasFilters?`<button class="toolbar-clear" data-action="clearFilters">Clear filters</button>`:''}
+      </div>
+      <p class="hint" style="margin:-.4rem 0 .9rem;">${filtered.length} of ${rows.length} record${rows.length===1?'':'s'}</p>
+      ${filtered.length ? `
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Category</th><th>Destination</th><th>Reason</th><th>Out</th><th>Due Back</th><th>In</th><th>Status</th><th>Approved By</th><th>Remarks</th></tr></thead>
+            <tbody>${filtered.map((m,i)=>`
+              <tr style="animation-delay:${Math.min(i,12)*25}ms">
+                <td class="row-id">${esc(m.movementId)}</td>
+                <td>${categoryBadgeHtml(m)}</td>
+                <td>${esc(m.destination||'—')}</td>
+                <td>${esc(m.reason||'—')}</td>
+                <td>${fmtDT(m.timeOut)}</td>
+                <td>${fmtDT(m.expectedReturn)}</td>
+                <td>${m.timeIn ? fmtDT(m.timeIn) : '—'}</td>
+                <td><div class="stack-badges"><span class="badge badge-${m.status}">${m.status}</span>${lateReturnBadgeHtml(m)}</div></td>
+                <td>${esc(m.approvedBy||'—')}</td>
+                <td>${esc(m.remarks||m.lateReason||'—')}</td>
+              </tr>`).join('')}</tbody>
+          </table>
+        </div>
+      ` : `<div class="empty-row card" style="padding:2.4rem;"><span class="big">▤</span>No history matches your filters.</div>`}
+      `;
+    }
+
+    // ─── TAB: Overview ──────────────────────────────────────────────────
+    function tplOverview() {
+      const u = state.user;
+      const pend = state.movements.filter(m => m.status === 'Pending');
+      const out = state.movements.filter(m => m.status === 'Approved');
+      const overdue = out.filter(overdueInfo);
+      return `
+      <div class="page-head"><div><h1>Welcome, ${esc(u.name.split(' ')[0])}</h1><p class="hint">${esc(CAMPUS_SUB)} ${u.role==='admin'?'· Admin privileges active':''}</p></div>
+        <button class="btn btn-primary" data-action="setTab" data-tab="log">⤴ Log Movement</button>
+      </div>
+      ${statCards()}
+      <div class="grid grid-2" style="margin-top:1.1rem;">
+        <div class="section-card">
+          <div class="sc-head"><h3>Awaiting approval</h3><button class="link-btn" data-action="setTab" data-tab="approvals">See all →</button></div>
+          ${pend.length ? pend.slice(0,4).map(m=>passCard(m)).join('') : `<div class="empty-row"><span class="big">✓</span>Nothing pending — all caught up.</div>`}
+        </div>
+        <div class="section-card">
+          <div class="sc-head"><h3>Currently off campus ${overdue.length?`<span class="badge badge-overdue-crit" style="margin-left:.4rem;">${overdue.length} overdue</span>`:''}</h3><button class="link-btn" data-action="setTab" data-tab="board">Live board →</button></div>
+          ${out.length ? out.slice(0,4).map(m=>passCard(m,{canReturn:true})).join('') : `<div class="empty-row"><span class="big">◎</span>No one is currently out.</div>`}
+        </div>
+      </div>`;
+    }
+
+    // ─── TAB: Log Movement ─────────────────────────────────────────────
+    function tplLogMovement() {
+      const activeCount = state.movements.filter(m => m.status==='Approved'||m.status==='Pending').length;
+      return `
+      <div class="page-head"><div><h1>Log Movement</h1><p class="hint">Record a student leaving campus — set an expected return time so overdue passes get flagged automatically.</p></div></div>
+      <div class="grid grid-2">
+        <div class="section-card">
+          <form data-form="logMovement" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="lmStudentId">Student ID</label><input id="lmStudentId" class="mono" name="studentId" placeholder="e.g. CSE001" data-lookup="studentId" autocomplete="off" /></div>
+              <div class="field"><label for="lmStudentName">Student Name</label><input id="lmStudentName" name="studentName" placeholder="Auto-filled, or type manually" required data-lookup-target="studentName" /></div>
+            </div>
+            <p class="hint" id="studentMatchHint" style="margin:-.4rem 0 1rem;min-height:1em;"></p>
+            <div class="form-grid">
+              <div class="field"><label for="lmCategory">Category</label><select id="lmCategory" name="category">${categoryOptionsHtml('Personal')}</select></div>
+              <div class="field"><label for="lmDuration">Expected Duration (hours)</label><input id="lmDuration" type="number" name="expectedDuration" min="0.5" max="72" step="0.5" value="${DEFAULT_EXPECTED_HOURS}" required /></div>
+            </div>
+            <div class="field"><label for="lmDest">Destination</label><input id="lmDest" name="destination" placeholder="e.g. Kollam Town, Hospital, Home" required /></div>
+            <div class="field"><label for="lmReason">Reason (specific description)</label><textarea id="lmReason" name="reason" placeholder="Briefly describe the purpose of the visit" required></textarea></div>
+            <label class="checkline"><input type="checkbox" name="autoApprove" value="1" checked /> Approve immediately (student can leave now)</label>
+            <button class="btn btn-primary btn-block" type="submit" ${state.loading?'disabled':''}>${state.loading?'<span class="spin"></span> Logging…':'Log Movement'}</button>
+          </form>
+        </div>
+        <div class="section-card">
+          <h3>Guidelines</h3>
+          <ol class="steps">
+            <li><b>Search by ID first</b> — a registered student ID auto-fills their name and class.</li>
+            <li><b>Set a realistic Expected Duration</b> — the pass turns yellow after it's due, and pulses red once it's more than 3 hours overdue.</li>
+            <li><b>Uncheck “Approve immediately”</b> to send it to the Approvals queue for a second staff member to confirm.</li>
+            <li><b>Mark the return</b> — from Live Board or Full Ledger. If a pass is overdue, you'll be asked for a Late Reason before it can be closed.</li>
+          </ol>
+          <p class="hint" style="margin-top:.8rem;">Currently ${activeCount} student${activeCount===1?'':'s'} have an active or pending pass.</p>
+        </div>
+      </div>`;
+    }
+
+    // ─── TAB: Approvals ─────────────────────────────────────────────────
+    function tplApprovals() {
+      const pend = filterRows(state.movements.filter(m => m.status === 'Pending'));
+      return `
+      <div class="page-head"><div><h1>Approvals Queue</h1><p class="hint">Review and act on pending gate pass requests.</p></div></div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="Search student, ID, destination…" value="${esc(state.filters.q)}" data-filter="q" />
+        <select data-filter="category"><option ${(!state.filters.category||state.filters.category==='All')?'selected':''}>All</option>${categoryOptionsHtml(state.filters.category)}</select>
+        ${state.filters.q||(state.filters.category&&state.filters.category!=='All')?`<button class="toolbar-clear" data-action="clearFilters">Clear</button>`:''}
+      </div>
+      ${pend.length ? pend.map(m=>passCard(m)).join('') : `<div class="empty-row card" style="padding:2.4rem;"><span class="big">✓</span>No pending requests right now.</div>`}`;
+    }
+
+    // ─── TAB: Live Board ───────────────────────────────────────────────
+    function tplBoard() {
+      let out = filterRows(state.movements.filter(m => m.status === 'Approved'));
+      // Overdue passes surface first so staff see risk immediately.
+      out = out.slice().sort((a, b) => {
+        const ia = overdueInfo(a), ib = overdueInfo(b);
+        const wa = ia ? (ia.level === 'crit' ? 2 : 1) : 0;
+        const wb = ib ? (ib.level === 'crit' ? 2 : 1) : 0;
+        return wb - wa;
+      });
+      const overdueCount = out.filter(overdueInfo).length;
+      return `
+      <div class="page-head"><div><h1>Live Board</h1><p class="hint">Everyone currently off campus, in real time. ${overdueCount?`<b style="color:var(--red)">${overdueCount} overdue.</b>`:''}</p></div></div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="Search…" value="${esc(state.filters.q)}" data-filter="q" />
+        <select data-filter="category"><option ${(!state.filters.category||state.filters.category==='All')?'selected':''}>All</option>${categoryOptionsHtml(state.filters.category)}</select>
+        ${state.filters.q||(state.filters.category&&state.filters.category!=='All')?`<button class="toolbar-clear" data-action="clearFilters">Clear</button>`:''}
+      </div>
+      ${out.length ? out.map(m=>passCard(m,{canReturn:true})).join('') : `<div class="empty-row card" style="padding:2.4rem;"><span class="big">◎</span>Campus is fully in — no one is out.</div>`}`;
+    }
+
+    // ─── TAB: Full Ledger ──────────────────────────────────────────────
+    function tplLedger() {
+      const rows = filterRows(state.movements);
+      const hasFilters = state.filters.q || state.filters.status !== 'All' || (state.filters.category && state.filters.category !== 'All');
+      return `
+      <div class="page-head"><div><h1>Full Ledger</h1><p class="hint">Complete movement register — filter, search and export.</p></div>
+        <button class="btn btn-ghost" data-action="exportCsv">⬇ Export CSV</button>
+      </div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="Search name, ID, destination…" value="${esc(state.filters.q)}" data-filter="q" />
+        <select data-filter="status">${['All','Pending','Approved','Rejected','Completed'].map(s=>`<option ${state.filters.status===s?'selected':''}>${s}</option>`).join('')}</select>
+        <select data-filter="category"><option ${(!state.filters.category||state.filters.category==='All')?'selected':''}>All</option>${categoryOptionsHtml(state.filters.category)}</select>
+        ${hasFilters?`<button class="toolbar-clear" data-action="clearFilters">Clear filters</button>`:''}
+      </div>
+      <p class="hint" style="margin:-.4rem 0 .9rem;">${rows.length} of ${state.movements.length} record${state.movements.length===1?'':'s'}</p>
+      ${ledgerTable(rows, {actions:true})}`;
+    }
+
+    // ─── TAB: Users ─────────────────────────────────────────────────────
+    function getStrikesForUser(id) {
+      return state.movements.filter(m => String(m.userId).toLowerCase() === String(id).toLowerCase() && isLateReturnClient(m)).length;
+    }
+
+    function tplUsers() {
+      const rows = filterRows2(state.users);
+      const isAdmin = state.user && state.user.role === 'admin';
+      return `
+      <div class="page-head"><div><h1>Manage Users</h1><p class="hint">Students (directory only) and staff (can sign in). ${isAdmin ? 'Admin users have full system access.' : ''}</p></div>
+        <button class="btn btn-primary" data-action="openAddUser">+ Add User</button>
+      </div>
+      <div class="toolbar">
+        <input class="search-input" placeholder="Search name or ID…" value="${esc(state.filters.q)}" data-filter="q" />
+        <select data-filter="role">
+          ${['All','student','staff','admin'].map(r=>`<option ${((state.filters.role||'All')===r)?'selected':''}>${r}</option>`).join('')}
+        </select>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th></th><th>ID</th><th>Name</th><th>Role</th><th>Class</th><th>Phone</th><th>Status</th><th>Strikes</th><th></th></tr></thead>
+        <tbody>${rows.length ? rows.map(u=>{
+          const strikes = u.role === 'student' ? getStrikesForUser(u.id) : 0;
+          return `
+          <tr>
+            <td>${avatarHtml(u)}</td>
+            <td class="row-id">${esc(u.id)}</td><td>${esc(u.name)}</td>
+            <td><span class="badge badge-${u.role}">${u.role}</span></td>
+            <td>${esc(u.class||'—')}</td><td>${esc(u.phone||'—')}</td>
+            <td><span class="badge badge-${u.status==='Active'?'Active':'Inactive'}">${u.status||'Active'}</span></td>
+            <td>${u.role==='student' ? (strikes ? strikePipHtml(strikes) : '<span class="hint">—</span>') : '<span class="hint">—</span>'}</td>
+            <td style="white-space:nowrap;">
+              <button class="btn btn-sm btn-ghost" data-action="openEditUser" data-id="${esc(u.id)}">Edit</button>
+              ${isAdmin ? `<button class="btn btn-sm btn-danger" data-action="deleteUser" data-id="${esc(u.id)}">Remove</button>` : ''}
+            </td>
+          </tr>`;
+        }).join('') : `<tr><td colspan="9"><div class="empty-row"><span class="big">☺</span>No users match.</div></td></tr>`}
+        </tbody>
+      </table></div>`;
+    }
+
+    function filterRows2(rows) {
+      let out = rows;
+      const role = state.filters.role || 'All';
+      if (role !== 'All') out = out.filter(r => r.role === role);
+      if (state.filters.q) { const q = state.filters.q.toLowerCase(); out = out.filter(r => (r.name || '').toLowerCase().includes(q) || (r.id || '').toLowerCase().includes(q)); }
+      return out;
+    }
+
+    // ─── TAB: Analytics (Admin only) ──────────────────────────────────
+    function tplAnalytics() {
+      const a = state.analytics || {};
+      const u = state.user;
+      if (u && u.role !== 'admin') return `<div class="empty-row card" style="padding:2.4rem;"><span class="big">⛔</span>Admin access only.</div>`;
+      const topStudents = a.topStudents || [];
+
+      return `
+      <div class="page-head"><div><h1>Analytics Dashboard</h1><p class="hint">Campus movement insights, overdue risk and reason-level trends.</p></div>
+        <div class="report-btn-wrap">
+          <button class="btn btn-ghost btn-sm" data-action="refreshAnalytics">↻ Refresh</button>
+          <button class="btn btn-primary btn-sm" data-action="generatePDFReport">📄 Generate PDF Report</button>
+        </div>
+      </div>
+      <div id="analytics-report-content">
+        <!-- Summary stats -->
+        <div class="grid grid-4" style="margin-bottom:1.5rem;">
+          <div class="card stat-card c-maroon"><div class="bar"></div><div class="eyebrow">Total Movements</div><div class="num"><span data-count="${a.totalMovements||0}">0</span></div></div>
+          <div class="card stat-card c-gold"><div class="bar"></div><div class="eyebrow">Avg. Duration (hrs)</div><div class="num"><span data-count="${a.avgDuration||0}">0</span></div></div>
+          <div class="card stat-card c-green"><div class="bar"></div><div class="eyebrow">Return Rate</div><div class="num"><span data-count="${a.returnRate||0}">0</span>%</div></div>
+          <div class="card stat-card c-red"><div class="bar"></div><div class="eyebrow">Overdue Right Now</div><div class="num"><span data-count="${a.overdueNow||0}">0</span></div></div>
+        </div>
+
+        <!-- Core charts -->
+        <div class="chart-grid">
+          <div class="section-card">
+            <h3>Role Distribution</h3>
+            <div class="chart-container doughnut"><canvas id="roleDoughnut"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Daily Activity (last 7 days)</h3>
+            <div class="chart-container"><canvas id="dailyBar"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Top Destinations</h3>
+            <div class="chart-container"><canvas id="destBar"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Movement Status</h3>
+            <div class="chart-container"><canvas id="statusBar"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Reason-oriented analytics -->
+        <div class="chart-grid">
+          <div class="section-card">
+            <h3>Overdue Risk by Category</h3>
+            <p class="hint" style="margin:-.3rem 0 .3rem;">On-time vs. late returns, per category (completed passes).</p>
+            <div class="chart-container"><canvas id="overdueCategoryBar"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Approval Funnel</h3>
+            <p class="hint" style="margin:-.3rem 0 .3rem;">Share of approved vs. rejected requests, per category.</p>
+            <div class="chart-container"><canvas id="approvalFunnelBar"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Movement Frequency by Category (last 14 days)</h3>
+            <p class="hint" style="margin:-.3rem 0 .3rem;">Daily outing counts per category.</p>
+            <div class="chart-container"><canvas id="reasonFrequencyLine"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Average Duration by Category</h3>
+            <p class="hint" style="margin:-.3rem 0 .3rem;">Average time away from campus, by category.</p>
+            <div class="chart-container polar"><canvas id="avgDurationPolar"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Weekly & monthly -->
+        <div class="chart-grid">
+          <div class="section-card">
+            <h3>Weekly Activity (last 8 weeks)</h3>
+            <div class="chart-container"><canvas id="weeklyBar"></canvas></div>
+          </div>
+          <div class="section-card">
+            <h3>Monthly Activity (last 12 months)</h3>
+            <div class="chart-container"><canvas id="monthlyBar"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Top Students Table -->
+        <div class="section-card">
+          <h3>Top Students by Movement Count</h3>
+          ${topStudents.length ? `
+            <div class="table-wrap student-table">
+              <table>
+                <thead><tr><th>#</th><th>Student</th><th>Total Movements</th><th>Top Destination</th><th>Strikes</th></tr></thead>
+                <tbody>
+                  ${topStudents.map((s, i) => `
+                    <tr>
+                      <td>${i+1}</td>
+                      <td>${esc(s.name)} <span class="hint">${esc(s.studentId)}</span></td>
+                      <td><b>${s.total}</b></td>
+                      <td>${esc(s.topDestination)}</td>
+                      <td>${s.strikes ? strikePipHtml(s.strikes) : '<span class="hint">—</span>'}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : `<p class="hint">No student movement data yet.</p>`}
+        </div>
+
+        <!-- Detailed breakdown table -->
+        <div class="section-card">
+          <h3>Detailed Breakdown</h3>
+          <div style="overflow-x:auto; margin-top:.6rem;">
+            <table>
+              <thead><tr><th>Metric</th><th>Value</th></tr></thead>
+              <tbody>
+                <tr><td>Total Movements</td><td>${a.totalMovements||0}</td></tr>
+                <tr><td>Avg Duration (hrs)</td><td>${a.avgDuration||0}</td></tr>
+                <tr><td>Return Rate (%)</td><td>${a.returnRate||0}</td></tr>
+                <tr><td>Overdue Right Now</td><td>${a.overdueNow||0}</td></tr>
+                <tr><td>Total Strikes (all-time)</td><td>${a.totalStrikes||0}</td></tr>
+                <tr><td>Top Destination</td><td>${a.topDestinations && a.topDestinations.length ? esc(a.topDestinations[0].destination) : '—'} (${a.topDestinations && a.topDestinations.length ? a.topDestinations[0].count : 0})</td></tr>
+                <tr><td>Most Active Day (last 7)</td><td>${a.dailyActivity && a.dailyActivity.length ? (() => { const max = a.dailyActivity.reduce((a,b) => a.count > b.count ? a : b); return max.date + ' (' + max.count + ')' })() : '—'}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // ─── Chart Initialization ──────────────────────────────────────────
+    async function initAnalyticsCharts() {
+      if (!window.Chart) {
+        try { await ensureChartJs(); } catch (e) { toast('Analytics chart library could not be loaded.', 'error'); return; }
+      }
+      for (const key in state.charts) {
+        if (state.charts[key]) state.charts[key].destroy();
+      }
+      state.charts = {};
+
+      const a = state.analytics || {};
+      const isDark = state.theme === 'dark';
+      const fontColor = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#181310';
+      const gridColor = getComputedStyle(document.documentElement).getPropertyValue('--line').trim() || 'rgba(24,19,16,.14)';
+      const greenC = getComputedStyle(document.documentElement).getPropertyValue('--green').trim() || '#2F7D5B';
+      const redC = getComputedStyle(document.documentElement).getPropertyValue('--red').trim() || '#B23A2E';
+      const maroonC = getComputedStyle(document.documentElement).getPropertyValue('--maroon').trim() || '#7A1F2B';
+      const goldC = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim() || '#B8842E';
+
+      const commonOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: fontColor, font: { size: 11 } } } },
+        scales: {
+          x: { ticks: { color: fontColor }, grid: { color: gridColor } },
+          y: { ticks: { color: fontColor }, grid: { color: gridColor } }
+        }
+      };
+
+      // 1. Role doughnut
+      const roleData = a.roleDist || [];
+      const doughnutCtx = document.getElementById('roleDoughnut');
+      if (doughnutCtx) {
+        state.charts.roleDoughnut = new Chart(doughnutCtx, {
+          type: 'doughnut',
+          data: {
+            labels: roleData.map(r => r.role),
+            datasets: [{ data: roleData.map(r => r.count), backgroundColor: ['#7A1F2B', '#B8842E', '#2F7D5B', '#B23A2E'].slice(0, roleData.length), borderColor: isDark ? '#211C18' : '#FFFDF8', borderWidth: 2 }]
+          },
+          options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: fontColor, font: { size: 11 } } } } }
+        });
+      }
+
+      // 2. Daily activity bar
+      const dailyData = a.dailyActivity || [];
+      const dailyCtx = document.getElementById('dailyBar');
+      if (dailyCtx) {
+        state.charts.dailyBar = new Chart(dailyCtx, {
+          type: 'bar',
+          data: { labels: dailyData.map(d => d.date.slice(5)), datasets: [{ label: 'Movements', data: dailyData.map(d => d.count), backgroundColor: maroonC, borderColor: maroonC, borderWidth: 1 }] },
+          options: { ...commonOptions, plugins: { ...commonOptions.plugins, legend: { display: false } } }
+        });
+      }
+
+      // 3. Top destinations
+      const destData = a.topDestinations || [];
+      const destCtx = document.getElementById('destBar');
+      if (destCtx) {
+        state.charts.destBar = new Chart(destCtx, {
+          type: 'bar',
+          data: { labels: destData.map(d => d.destination).slice(0, 5), datasets: [{ label: 'Visits', data: destData.map(d => d.count).slice(0, 5), backgroundColor: goldC, borderColor: goldC, borderWidth: 1 }] },
+          options: { ...commonOptions, indexAxis: 'y', plugins: { ...commonOptions.plugins, legend: { display: false } } }
+        });
+      }
+
+      // 4. Movement status
+      const statuses = ['Pending', 'Approved', 'Completed', 'Rejected'];
+      const statusCounts = statuses.map(s => state.movements.filter(m => m.status === s).length);
+      const statusCtx = document.getElementById('statusBar');
+      if (statusCtx) {
+        state.charts.statusBar = new Chart(statusCtx, {
+          type: 'bar',
+          data: { labels: statuses, datasets: [{ label: 'Count', data: statusCounts, backgroundColor: [goldC, greenC, greenC, redC], borderColor: [goldC, greenC, greenC, redC], borderWidth: 1 }] },
+          options: { ...commonOptions, plugins: { ...commonOptions.plugins, legend: { display: false } } }
+        });
+      }
+
+      // 5. Overdue Risk by Reason — stacked bar (on-time vs late)
+      const overdueCat = a.overdueByCategory || [];
+      const overdueCtx = document.getElementById('overdueCategoryBar');
+      if (overdueCtx) {
+        state.charts.overdueCategoryBar = new Chart(overdueCtx, {
+          type: 'bar',
+          data: {
+            labels: overdueCat.map(c => c.category),
+            datasets: [
+              { label: 'On time', data: overdueCat.map(c => c.onTime), backgroundColor: greenC, stack: 's' },
+              { label: 'Late', data: overdueCat.map(c => c.late), backgroundColor: redC, stack: 's' },
+            ]
+          },
+          options: { ...commonOptions, scales: { x: { ...commonOptions.scales.x, stacked: true }, y: { ...commonOptions.scales.y, stacked: true, beginAtZero: true } } }
+        });
+      }
+
+      // 6. Approval Funnel — 100% stacked bar
+      const funnel = a.approvalFunnel || [];
+      const funnelPct = funnel.map(c => {
+        const total = c.approved + c.rejected;
+        return { category: c.category, approvedPct: total ? Math.round((c.approved / total) * 100) : 0, rejectedPct: total ? Math.round((c.rejected / total) * 100) : 0 };
+      });
+      const funnelCtx = document.getElementById('approvalFunnelBar');
+      if (funnelCtx) {
+        state.charts.approvalFunnelBar = new Chart(funnelCtx, {
+          type: 'bar',
+          data: {
+            labels: funnelPct.map(c => c.category),
+            datasets: [
+              { label: 'Approved %', data: funnelPct.map(c => c.approvedPct), backgroundColor: greenC, stack: 's' },
+              { label: 'Rejected %', data: funnelPct.map(c => c.rejectedPct), backgroundColor: redC, stack: 's' },
+            ]
+          },
+          options: { ...commonOptions, indexAxis: 'y', scales: { x: { ...commonOptions.scales.x, stacked: true, max: 100 }, y: { ...commonOptions.scales.y, stacked: true } } }
+        });
+      }
+
+      // 7. Reason Frequency — multi-line
+      const rf = a.reasonFrequency || { dates: [], series: [] };
+      const rfCtx = document.getElementById('reasonFrequencyLine');
+      if (rfCtx) {
+        state.charts.reasonFrequencyLine = new Chart(rfCtx, {
+          type: 'line',
+          data: {
+            labels: (rf.dates || []).map(d => d.slice(5)),
+            datasets: (rf.series || []).map((s, i) => ({
+              label: s.category,
+              data: s.counts,
+              borderColor: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
+              backgroundColor: CATEGORY_COLORS[i % CATEGORY_COLORS.length],
+              tension: .3,
+              pointRadius: 2,
+              borderWidth: 2,
+              fill: false,
+            }))
+          },
+          options: { ...commonOptions, plugins: { legend: { labels: { color: fontColor, font: { size: 10 } } } } }
+        });
+      }
+
+      // 8. Average Duration by Category — polar area
+      const avgDur = a.avgDurationByCategory || [];
+      const polarCtx = document.getElementById('avgDurationPolar');
+      if (polarCtx) {
+        state.charts.avgDurationPolar = new Chart(polarCtx, {
+          type: 'polarArea',
+          data: { labels: avgDur.map(c => c.category), datasets: [{ data: avgDur.map(c => c.avgHours), backgroundColor: CATEGORY_COLORS.map(c => c + 'b3') }] },
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: fontColor, font: { size: 10 } } } },
+            scales: { r: { ticks: { color: fontColor, backdropColor: 'transparent' }, grid: { color: gridColor }, angleLines: { color: gridColor } } }
+          }
+        });
+      }
+
+      // 9. Weekly activity
+      const weekly = a.weeklyActivity || [];
+      const weeklyCtx = document.getElementById('weeklyBar');
+      if (weeklyCtx) {
+        state.charts.weeklyBar = new Chart(weeklyCtx, {
+          type: 'bar',
+          data: { labels: weekly.map(w => w.week.slice(5)), datasets: [{ label: 'Movements', data: weekly.map(w => w.count), backgroundColor: maroonC, borderColor: maroonC, borderWidth: 1 }] },
+          options: { ...commonOptions, plugins: { ...commonOptions.plugins, legend: { display: false } } }
+        });
+      }
+
+      // 10. Monthly activity
+      const monthly = a.monthlyActivity || [];
+      const monthlyCtx = document.getElementById('monthlyBar');
+      if (monthlyCtx) {
+        state.charts.monthlyBar = new Chart(monthlyCtx, {
+          type: 'bar',
+          data: { labels: monthly.map(m => m.month.slice(5)), datasets: [{ label: 'Movements', data: monthly.map(m => m.count), backgroundColor: goldC, borderColor: goldC, borderWidth: 1 }] },
+          options: { ...commonOptions, plugins: { ...commonOptions.plugins, legend: { display: false } } }
+        });
+      }
+    }
+
+    // ─── PDF Report Generation ─────────────────────────────────────────
+    async function generatePDFReport() {
+      const content = document.getElementById('analytics-report-content');
+      if (!content) { toast('Analytics data not loaded.', 'error'); return; }
+
+      const btn = document.querySelector('[data-action="generatePDFReport"]');
+      const origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spin"></span> Generating PDF…`;
+
+      try {
+        await ensurePdfLibs();
+        const canvas = await html2canvas(content, {
+          scale: 2, useCORS: true,
+          backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--surface').trim() || '#FFFDF8',
+          logging: false, allowTaint: false
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+        let heightLeft = pdfHeight;
+        let position = 0;
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pdf.internal.pageSize.getHeight();
+        while (heightLeft > 0) {
+          position = heightLeft - pdfHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+          heightLeft -= pdf.internal.pageSize.getHeight();
+        }
+
+        pdf.save('Crescent_SNEC_Analytics_Report.pdf');
+        toast('PDF report generated successfully.', 'success');
+      } catch (err) {
+        console.error(err);
+        toast('Failed to generate PDF: ' + err.message, 'error');
+      } finally {
+        btn.innerHTML = origHtml;
+        btn.disabled = false;
+      }
+    }
+
+    // ─── TAB: Profile ──────────────────────────────────────────────────
+    function tplProfile() {
+      const u = state.user;
+      return `
+      <div class="page-head"><div><h1>Profile</h1><p class="hint">Your account details and password.</p></div></div>
+      <div class="grid grid-2">
+        <div class="section-card">
+          <h3>Account</h3>
+          <div style="display:flex;align-items:center;gap:1rem;margin-top:1rem;">
+            ${avatarHtml(u, 'lg')}
+            <div>
+              <div style="font-weight:700;font-size:1.05rem;">${esc(u.name)}</div>
+              <div class="hint mono">${esc(u.id)} · ${esc(u.role||'staff')}</div>
+            </div>
+          </div>
+          <div class="form-grid" style="margin-top:1.2rem;">
+            <div class="field"><label>Name</label><input value="${esc(u.name)}" disabled /></div>
+            <div class="field"><label>ID</label><input class="mono" value="${esc(u.id)}" disabled /></div>
+            <div class="field"><label>Role</label><input value="${esc(u.role || 'staff')}" disabled /></div>
+            <div class="field"><label>Class</label><input value="${esc(u.class||'—')}" disabled /></div>
+          </div>
+          ${u.role === 'student' ? `<p class="hint" style="margin-top:.4rem;">Strikes on record: ${state.myStrikes ? strikePipHtml(state.myStrikes) : '<b style="color:var(--ink)">0</b>'}</p>` : ''}
+        </div>
+        <div class="section-card">
+          <h3>Change Password</h3>
+          <form data-form="changePassword" novalidate>
+            <div class="field"><label for="pwOld">Current password</label><input id="pwOld" type="password" name="oldPassword" autocomplete="current-password" required /></div>
+            <div class="field"><label for="pwNew">New password</label><input id="pwNew" type="password" name="newPassword" minlength="4" autocomplete="new-password" required /></div>
+            <p class="hint" style="margin:-.4rem 0 1rem;">At least 4 characters.</p>
+            <button class="btn btn-primary btn-block" type="submit" ${state.loading?'disabled':''}>${state.loading?'<span class="spin"></span> Updating…':'Update Password'}</button>
+          </form>
+        </div>
+      </div>`;
+    }
+
+    // ─── MODALS ──────────────────────────────────────────────────────────
+    function renderModalInto() {
+      if (!modalHostEl) return;
+      const m = state.modal;
+      let inner = '';
+      if (m.name === 'addUser' || m.name === 'editUser') {
+        const editing = m.name === 'editUser';
+        const d = m.data || {};
+        const role = d.role || 'student';
+        const isStaff = role === 'staff' || role === 'admin';
+        const pwLabel = editing
+          ? (isStaff ? 'New password (optional)' : 'New portal password (optional)')
+          : (isStaff ? 'Password' : 'Portal password (optional)');
+        const roleOpts = ['student', 'staff'];
+        if (state.user && state.user.role === 'admin') roleOpts.push('admin');
+        inner = `
+          <button type="button" class="modal-close" data-action="closeModal" aria-label="Close">✕</button>
+          <h3 style="margin-bottom:1rem;">${editing?'Edit User':'Add User'}</h3>
+          <form data-form="${editing?'updateUser':'addUser'}" novalidate autocomplete="off">
+            <input type="hidden" name="id" value="${esc(d.id||'')}" />
+            <div class="form-grid">
+              <div class="field"><label>ID</label><input class="mono" name="visId" value="${esc(d.id||'')}" ${editing?'disabled':''} placeholder="e.g. CSE010" required /></div>
+              <div class="field"><label>Role</label><select name="role" onchange="toggleUserPasswordField(this)">
+                ${roleOpts.map(r=>`<option value="${r}" ${role===r?'selected':''}>${r}</option>`).join('')}
+              </select></div>
+              <div class="field"><label>Full name</label><input name="name" value="${esc(d.name||'')}" required /></div>
+              <div class="field"><label>Class</label><input name="class" value="${esc(d.class||'')}" /></div>
+              <div class="field"><label>Phone</label><input name="phone" value="${esc(d.phone||'')}" pattern="[0-9+\\-\\s]{0,15}" /></div>
+              <div class="field" id="userPasswordField">
+                <label id="userPasswordLabel">${pwLabel}</label>
+                <input type="password" name="password" autocomplete="new-password" data-editing="${editing?'1':''}" />
+              </div>
+            </div>
+<p class="hint" id="studentRoleHint" style="margin:-.4rem 0 1rem;${role==='student'?'':'display:none;'}">Students who need the portal must have a password. Staff/admin accounts always require a password.</p>
+            <div style="display:flex; gap:.6rem; margin-top:.4rem;">
+              <button type="button" class="btn btn-ghost" style="flex:1" data-action="closeModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="flex:1">${editing?'Save Changes':'Add User'}</button>
+            </div>
+          </form>`;
+      } else if (m.name === 'approveReject') {
+        const d = m.data;
+        inner = `
+          <button type="button" class="modal-close" data-action="closeModal" aria-label="Close">✕</button>
+          <h3 style="margin-bottom:.3rem;">${d.decision==='Reject'?'Reject':'Approve'} Request</h3>
+          <p class="hint" style="margin-bottom:1rem;">${esc(d.name)} → ${esc(d.destination||'—')}</p>
+          <form data-form="doApproveReject" novalidate>
+            <input type="hidden" name="movementId" value="${esc(d.movementId)}" /><input type="hidden" name="decision" value="${esc(d.decision)}" />
+            <div class="field"><label>Remarks (optional)</label><textarea name="remarks" placeholder="Any notes for the record"></textarea></div>
+            <div style="display:flex; gap:.6rem;">
+              <button type="button" class="btn btn-ghost" style="flex:1" data-action="closeModal">Cancel</button>
+              <button type="submit" class="btn ${d.decision==='Reject'?'btn-danger':'btn-primary'}" style="flex:1">Confirm ${d.decision}</button>
+            </div>
+          </form>`;
+      } else if (m.name === 'lateReturn') {
+        const d = m.data;
+        inner = `
+          <button type="button" class="modal-close" data-action="closeModal" aria-label="Close">✕</button>
+          <h3 style="margin-bottom:.3rem;">Late Return</h3>
+          <p class="hint" style="margin-bottom:.8rem;">${esc(d.name||'')}${d.destination?(' → '+esc(d.destination)):''}</p>
+          <div class="modal-warn-strip"><span>⏰</span><span>This pass is overdue${d.lateBy?(' ('+esc(d.lateBy)+')'):''}. A reason is required before it can be marked in.</span></div>
+          <form data-form="submitLateReturn" novalidate>
+            <input type="hidden" name="movementId" value="${esc(d.movementId)}" />
+            <div class="field"><label>Late Reason</label><textarea name="lateReason" placeholder="Why is this pass being returned late?" required></textarea></div>
+            <div style="display:flex; gap:.6rem;">
+              <button type="button" class="btn btn-ghost" style="flex:1" data-action="closeModal">Cancel</button>
+              <button type="submit" class="btn btn-primary" style="flex:1">Mark In</button>
+            </div>
+          </form>`;
+      } else if (m.name === 'confirmDelete') {
+        const d = m.data;
+        inner = `
+          <button type="button" class="modal-close" data-action="closeModal" aria-label="Close">✕</button>
+          <h3 style="margin-bottom:.3rem;">Remove user?</h3>
+          <p class="hint" style="margin-bottom:1.2rem;">This will permanently remove <b style="color:var(--ink)">${esc(d.id)}</b> from the register. This cannot be undone.</p>
+          <div style="display:flex; gap:.6rem;">
+            <button type="button" class="btn btn-ghost" style="flex:1" data-action="closeModal">Cancel</button>
+            <button type="button" class="btn btn-danger" style="flex:1" data-action="confirmDeleteUser" data-id="${esc(d.id)}">Remove</button>
+          </div>`;
+      } else if (m.name === 'more') {
+        const nav = currentNav();
+        inner = `
+          <button type="button" class="modal-close" data-action="closeModal" aria-label="Close">✕</button>
+          <h3 style="margin-bottom:1rem;">More</h3>
+          <div style="display:flex;flex-direction:column;gap:.3rem;">
+            ${nav.filter(n=>!currentMobilePrimary().includes(n.id)).map(n=>`<div class="nav-item ${state.tab===n.id?'active':''}" data-action="setTabAndClose" data-tab="${n.id}"><span>${n.ico}</span>${n.label}${navBadge(n)}</div>`).join('')}
+            <div class="nav-item" data-action="toggleThemeClose"><span>${state.theme==='dark'?'☀':'●'}</span>${state.theme==='dark'?'Light mode':'Dark mode'}</div>
+            <div class="nav-item" data-action="logoutClose"><span>⏻</span>Logout</div>
+          </div>`;
+      }
+      modalHostEl.innerHTML = `<div class="modal-backdrop" data-action="backdropClose"><div class="modal">${inner}</div></div>`;
+      const modalBox = modalHostEl.querySelector('.modal');
+      if (modalBox) {
+        modalBox.addEventListener('click', e => e.stopPropagation());
+      }
+      const firstInput = modalHostEl.querySelector('input:not([type=hidden]):not([disabled]), textarea, select');
+      if (firstInput) setTimeout(() => firstInput.focus(), 50);
+    }
+
+    window.toggleUserPasswordField = function(selectEl) {
+      const label = document.getElementById('userPasswordLabel');
+      const hint = document.getElementById('studentRoleHint');
+      if (!label) return;
+      const isStaff = selectEl.value === 'staff' || selectEl.value === 'admin';
+      const form = selectEl.closest('form');
+      const editing = form && form.dataset.form === 'updateUser';
+      label.textContent = editing
+        ? (isStaff ? 'New password (optional)' : 'New portal password (optional)')
+        : (isStaff ? 'Password' : 'Portal password (optional)');
+      if (hint) hint.style.display = isStaff ? 'none' : '';
+    };
+
+    // ─── DATA LOADING ──────────────────────────────────────────────────
+    // Initial load fetches the shared datasets once. Tab navigation never
+    // reloads the entire database; mutations perform targeted refreshes.
+    let initialLoadPromise = null;
+
+    // Backward-compatible alias used by boot/reconnect flows.
+    function loadInitialData(options = {}) { return loadAll(options); }
+
+    async function loadAll(options = {}) {
+      const force = !!options.force;
+      const showSkeleton = !state.movements.length && !state.users.length && Object.keys(state.stats || {}).length === 0;
+
+      if (initialLoadPromise) return initialLoadPromise;
+
+      if (state.user && state.user.role === 'student') {
+        if (showSkeleton) { state.tabLoading = true; refreshTabContent(true); }
+        const p = (async () => {
+          const res = await api('getMyStatus', {});
+          if (res.authError) return doLogout(true);
+          state.tabLoading = false;
+          if (!res.ok) { refreshTabContent(); toast(res.message || 'Could not refresh your status.', 'error'); return; }
+          state.myStatus = res.current || null;
+          state.myStrikes = res.strikes || 0;
+          refreshTabContent(true);
+          if (state.tab === 'history') await loadStudentHistory();
+        })();
+        initialLoadPromise = p.finally(() => { initialLoadPromise = null; });
+        return initialLoadPromise;
+      }
+
+      if (showSkeleton) { state.tabLoading = true; refreshTabContent(true); }
+      const p = (async () => {
+        const res = await api('getInitialData', {});
+        if (res.authError) return doLogout(true);
+        if (!res.ok) {
+          state.tabLoading = false;
+          refreshTabContent();
+          toast(res.message || 'Could not refresh data — check your connection.', 'error');
+          return;
+        }
+        state.movements = res.movements || [];
+        state.stats = res.stats || {};
+        state.users = res.users || [];
+        state.tabLoading = false;
+        refreshTabContent(true);
+      })();
+      initialLoadPromise = p.finally(() => { initialLoadPromise = null; });
+      return initialLoadPromise;
+    }
+
+    async function refreshAfterMutation({users = false, analytics = false} = {}) {
+      // Refresh only the datasets that can have changed. Movement/stat changes
+      // are common; user and analytics data are refreshed only when necessary.
+      const res = await api('getInitialData', {});
+      if (res.authError) return doLogout(true);
+      if (!res.ok) { toast(res.message || 'Could not refresh data.', 'error'); return; }
+      state.movements = res.movements || state.movements;
+      state.stats = res.stats || state.stats;
+      state.users = res.users || state.users;
+      if (analytics && state.tab === 'analytics' && state.user && state.user.role === 'admin') {
+        const an = await api('getAnalytics', {});
+        if (an.ok) state.analytics = an.analytics || {};
+      }
+      refreshTabContent(true);
+    }
+
+    async function loadStudentHistory() {
+      if (!state.user || state.user.role !== 'student') return;
+      const res = await api('getMyHistory', {});
+      if (res.authError) return doLogout(true);
+      if (!res.ok) { toast(res.message || 'Could not load your history.', 'error'); return; }
+      state.studentHistory = res.movements || [];
+      state.studentHistoryStrikes = res.strikes || 0;
+      if (state.tab === 'history') refreshTabContent(true);
+    }
+
+    async function loadAnalytics(force = false) {
+      if (!state.user || state.user.role !== 'admin') return;
+      if (state.analytics && !force) {
+        refreshTabContent(true);
+        return;
+      }
+      const an = await api('getAnalytics', {});
+      if (an.authError) return doLogout(true);
+      if (an.ok) { state.analytics = an.analytics || {}; refreshTabContent(true); }
+      else toast(an.message || 'Could not load analytics.', 'error');
+    }
+
+    // ─── Button busy helper ────────────────────────────────────────────
+    function setBtnBusy(btn, busy, busyText) {
+      if (!btn) return;
+      if (busy) {
+        btn.dataset.origHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spin"></span> ${busyText || 'Working…'}`;
+      } else if (btn.dataset.origHtml) {
+        btn.innerHTML = btn.dataset.origHtml;
+        btn.disabled = false;
+        delete btn.dataset.origHtml;
+      }
+    }
+
+    // ─── ACTIONS ──────────────────────────────────────────────────────
+    async function doLogin(form) {
+      state.gateError = '';
+      state.loading = true;
+      render();
+      const id = (form.get('id') || '').trim(), password = form.get('password') || '';
+      if (!id || !password) { state.loading = false; state.gateError = 'Enter both your ID and password.'; render(); return; }
+      const res = await api('login', { id, password });
+      state.loading = false;
+      if (!res.ok) { state.gateError = res.message || 'Login failed.'; render(); return; }
+      state.token = res.token;
+      state.user = res.user;
+      state.view = 'app';
+      state.tab = res.user.role === 'student' ? 'status' : 'overview';
+      saveSession();
+      render();
+      doneOverlay('welcome', res.user.name.split(' ')[0], 1200);
+      loadInitialData();
+      startOverdueTicker();
+    }
+
+    async function doLogout(silent) {
+      if (!silent && state.token) await api('logout', {});
+      state.token = null;
+      state.user = null;
+      state.view = 'gate';
+      state.movements = [];
+      state.users = [];
+      state.stats = {};
+      state.analytics = null;
+      state.studentHistory = [];
+      state.studentHistoryStrikes = 0;
+      state.myStrikes = 0;
+      state.gateError = '';
+      clearInterval(state._overdueTick);
+      saveSession();
+      render();
+      if (silent) toast('Session expired — please sign in again.', 'error');
+    }
+
+    async function doLogMovement(form, formEl) {
+      const studentId = (form.get('studentId') || '').trim(), studentName = (form.get('studentName') || '').trim();
+      const destination = (form.get('destination') || '').trim(), reason = (form.get('reason') || '').trim();
+      const category = form.get('category') || 'Other';
+      const expectedDuration = form.get('expectedDuration') || DEFAULT_EXPECTED_HOURS;
+      if (!studentName || !destination || !reason) { toast('Please fill in student name, destination and reason.', 'error'); return; }
+      const autoApprove = form.get('autoApprove') ? '1' : '0';
+      state.loading = true;
+      refreshTabContent(true);
+      const res = await api('logMovement', { studentId, studentName, destination, reason, category, expectedDuration, autoApprove });
+      state.loading = false;
+      if (!res.ok) { toast(res.message || 'Could not log movement.', 'error'); refreshTabContent(true); return; }
+      const approved = res.movement && res.movement.status === 'Approved';
+      doneOverlay(approved ? 'out' : 'pending', (res.movement && res.movement.name) || destination);
+      state.tab = approved ? 'board' : 'approvals';
+      await refreshAfterMutation();
+    }
+
+    // Central overdue-aware "Mark In" entry point used by pass cards & ledger rows.
+    function handleMarkReturnClick(id, btn) {
+      const mv = state.movements.find(x => x.movementId === id)
+        || (state.myStatus && state.myStatus.movementId === id ? state.myStatus : null);
+      const info = mv ? overdueInfo(mv) : null;
+      if (info) {
+        openModal('lateReturn', { movementId: id, name: mv.name, destination: mv.destination, lateBy: info.label });
+      } else {
+        doMarkReturn(id, btn);
+      }
+    }
+
+    async function doMarkReturn(id, btn, lateReason) {
+      setBtnBusy(btn, true, '');
+      const res = await api('markReturn', { movementId: id, lateReason: lateReason || '' });
+      if (res.requiresLateReason) {
+        setBtnBusy(btn, false);
+        const meta = findMovementMeta(id);
+        openModal('lateReturn', { movementId: id, ...meta });
+        return;
+      }
+      if (!res.ok) { setBtnBusy(btn, false); toast(res.message || 'Could not mark return.', 'error'); return; }
+      doneOverlay('in');
+      await refreshAfterMutation();
+    }
+
+    async function doSubmitLateReturn(form, formEl) {
+      const movementId = form.get('movementId');
+      const lateReason = (form.get('lateReason') || '').trim();
+      if (!lateReason) { toast('Please provide a reason for the late return.', 'error'); return; }
+      const submitBtn = formEl ? formEl.querySelector('button[type=submit]') : null;
+      setBtnBusy(submitBtn, true, 'Marking in…');
+      const res = await api('markReturn', { movementId, lateReason });
+      if (!res.ok) { setBtnBusy(submitBtn, false); toast(res.message || 'Could not mark return.', 'error'); return; }
+      closeModal();
+      doneOverlay('in', 'Late reason recorded');
+      await refreshAfterMutation();
+    }
+
+    async function doApproveReject(form, formEl) {
+      const decision = form.get('decision');
+      const submitBtn = formEl ? formEl.querySelector('button[type=submit]') : null;
+      setBtnBusy(submitBtn, true, decision === 'Reject' ? 'Rejecting…' : 'Approving…');
+      const res = await api('approveMovement', { movementId: form.get('movementId'), decision, remarks: form.get('remarks') });
+      if (!res.ok) { setBtnBusy(submitBtn, false); toast(res.message || 'Action failed.', 'error'); return; }
+      closeModal();
+      doneOverlay(decision === 'Reject' ? 'reject' : 'approve');
+      await refreshAfterMutation();
+    }
+
+    async function doChangePassword(form, formEl) {
+      const oldPw = form.get('oldPassword') || '', newPw = form.get('newPassword') || '';
+      if (newPw.length < 4) { toast('New password must be at least 4 characters.', 'error'); return; }
+      state.loading = true;
+      refreshTabContent(true);
+      const res = await api('changePassword', { oldPassword: oldPw, newPassword: newPw });
+      state.loading = false;
+      if (!res.ok) { toast(res.message || 'Could not update password.', 'error'); refreshTabContent(true); return; }
+      doneOverlay('ok', 'Password changed');
+      refreshTabContent(true);
+    }
+
+    async function doAddUser(form, formEl) {
+      if (state.savingUser) return;
+      const role = form.get('role');
+      const id = (form.get('visId') || '').trim(), name = (form.get('name') || '').trim();
+      if (!id || !name) { toast('User ID and name are required.', 'error'); return; }
+      if ((role === 'staff' || role === 'admin') && !form.get('password')) { toast('Staff and admin accounts need a password.', 'error'); return; }
+
+      const submitBtn = formEl ? formEl.querySelector('button[type=submit]') : null;
+      const cancelBtn = formEl ? formEl.querySelector('[data-action="closeModal"]') : null;
+      state.savingUser = true;
+      setBtnBusy(submitBtn, true, 'Adding…');
+      if (cancelBtn) cancelBtn.disabled = true;
+
+      try {
+        // Keep the Add User modal open until the backend confirms success.
+        const res = await api('addUser', {
+          id,
+          name,
+          role,
+          className: form.get('class'),
+          phone: form.get('phone'),
+          password: form.get('password')
+        });
+
+        if (!res.ok) {
+          setBtnBusy(submitBtn, false);
+          if (cancelBtn) cancelBtn.disabled = false;
+          toast(res.message || 'Could not add user.', 'error');
+          return;
+        }
+
+        closeModal();
+        doneOverlay('ok', id);
+        await refreshAfterMutation({users:true});
+      } catch (err) {
+        setBtnBusy(submitBtn, false);
+        if (cancelBtn) cancelBtn.disabled = false;
+        toast('Could not add user. Please try again.', 'error');
+      } finally {
+        state.savingUser = false;
+      }
+    }
+
+    async function doUpdateUser(form, formEl) {
+      const submitBtn = formEl ? formEl.querySelector('button[type=submit]') : null;
+      setBtnBusy(submitBtn, true, 'Saving…');
+      const res = await api('updateUser', { id: form.get('id'), name: form.get('name'), role: form.get('role'), className: form.get('class'), phone: form.get('phone'), password: form.get('password') });
+      if (!res.ok) { setBtnBusy(submitBtn, false); toast(res.message || 'Could not update user.', 'error'); return; }
+      closeModal();
+      doneOverlay('ok', form.get('id'));
+      await refreshAfterMutation({users:true});
+    }
+
+    function doDeleteUser(id) { openModal('confirmDelete', { id }); }
+
+    async function confirmDeleteUser(id, btn) {
+      setBtnBusy(btn, true, 'Removing…');
+      const res = await api('deleteUser', { id });
+      if (!res.ok) { setBtnBusy(btn, false); toast(res.message || 'Could not remove user.', 'error'); return; }
+      closeModal();
+      toast('User removed.', 'success');
+      await refreshAfterMutation({users:true});
+    }
+
+    function exportCsv() {
+      const rows = filterRows(state.movements);
+      if (!rows.length) { toast('Nothing to export for the current filters.', 'error'); return; }
+      const headers = ['MovementID', 'UserID', 'Name', 'Role', 'Class', 'Category', 'Reason', 'Destination', 'TimeOut', 'ExpectedReturn', 'TimeIn', 'Status', 'ApprovedBy', 'Remarks', 'LateReason', 'LoggedBy'];
+      const csv = [headers.join(',')].concat(rows.map(m => headers.map(h => {
+        const key = h.charAt(0).toLowerCase() + h.slice(1);
+        let v = m[key] ?? '';
+        v = String(v).replace(/"/g, '""');
+        return /[,"\n]/.test(v) ? `"${v}"` : v;
+      }).join(','))).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'csnec-movement-ledger-' + new Date().toISOString().slice(0,10) + '.csv';
+      a.click();
+      URL.revokeObjectURL(a.href);
+      toast('CSV exported.', 'success');
+    }
+
+    function findMovementMeta(id) { const m = state.movements.find(x => x.movementId === id); return m ? { name: m.name, destination: m.destination } : {}; }
+
+    // ─── EVENT DELEGATION ──────────────────────────────────────────────
+    document.addEventListener('click', async (e) => {
+      const t = e.target.closest('[data-action]');
+      if (!t) {
+        if (e.target.classList && e.target.classList.contains('modal-backdrop')) closeModal();
+        return;
+      }
+      const action = t.dataset.action;
+      switch (action) {
+        case 'toggleTheme':
+          state.theme = state.theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', state.theme);
+          saveSettings();
+          render();
+          break;
+        case 'toggleShowPw':
+          state.showPw = !state.showPw;
+          render();
+          break;
+        case 'backdropClose': closeModal(); break;
+        case 'closeModal': closeModal(); break;
+        case 'clearFilters':
+          state.filters = { status: 'All', q: '', role: state.filters.role || 'All', category: 'All' };
+          refreshTabContent();
+          break;
+        case 'setTab':
+          if (state.tab === t.dataset.tab) break;
+          state.tab = t.dataset.tab;
+          state.filters = { status: 'All', q: '', role: 'All', category: 'All' };
+          render();
+          if (state.tab === 'analytics' && state.user && state.user.role === 'admin') loadAnalytics();
+          break;
+        case 'setTabAndClose':
+          state.tab = t.dataset.tab;
+          state.filters = { status: 'All', q: '', role: 'All', category: 'All' };
+          closeModal();
+          render();
+          if (state.tab === 'analytics' && state.user && state.user.role === 'admin') loadAnalytics();
+          break;
+        case 'toggleThemeClose':
+          state.theme = state.theme === 'dark' ? 'light' : 'dark';
+          document.documentElement.setAttribute('data-theme', state.theme);
+          saveSettings();
+          closeModal();
+          render();
+          break;
+        case 'logoutClose':
+          closeModal();
+          doLogout();
+          break;
+        case 'openMoreSheet': openModal('more', {}); break;
+        case 'logout': doLogout(); break;
+        case 'markReturn': handleMarkReturnClick(t.dataset.id, t); break;
+        case 'approve': openModal('approveReject', { movementId: t.dataset.id, decision: 'Approve', ...findMovementMeta(t.dataset.id) }); break;
+        case 'reject': openModal('approveReject', { movementId: t.dataset.id, decision: 'Reject', ...findMovementMeta(t.dataset.id) }); break;
+        case 'openAddUser': openModal('addUser', {}); break;
+        case 'openEditUser': { const u = state.users.find(x => x.id === t.dataset.id); openModal('editUser', u || {}); break; }
+        case 'deleteUser': doDeleteUser(t.dataset.id); break;
+        case 'confirmDeleteUser': confirmDeleteUser(t.dataset.id, t); break;
+        case 'exportCsv': exportCsv(); break;
+        case 'refreshAnalytics': loadAnalytics(true); break;
+        case 'generatePDFReport': generatePDFReport(); break;
+      }
+    });
+
+    document.addEventListener('input', (e) => {
+      // Inputs inside an open modal must not trigger page refreshes.
+      if (e.target.closest('#modalHost .modal')) return;
+      if (e.target.dataset.filter) {
+        state.filters[e.target.dataset.filter] = e.target.value;
+        clearTimeout(state._debounce);
+        state._debounce = setTimeout(refreshTabContentPreserveFocus, e.target.tagName === 'SELECT' ? 0 : 180);
+        return;
+      }
+      if (e.target.dataset.lookup === 'studentId') {
+        const id = e.target.value.trim();
+        const nameField = document.querySelector('[data-lookup-target="studentName"]');
+        const hint = document.getElementById('studentMatchHint');
+        if (!hint) return;
+        const match = id ? state.users.find(u => u.role === 'student' && String(u.id).toLowerCase() === id.toLowerCase()) : null;
+        if (id && match) {
+          hint.textContent = '✓ Matched: ' + match.name + (match.class ? ' · ' + match.class : '');
+          hint.style.color = 'var(--green)';
+          if (nameField) { nameField.value = match.name; nameField.dataset.auto = '1'; }
+        } else if (id) {
+          hint.textContent = 'No student found with this ID — you can still enter their name manually.';
+          hint.style.color = 'var(--gold)';
+          if (nameField && nameField.dataset.auto === '1') { nameField.value = ''; nameField.dataset.auto = ''; }
+        } else {
+          hint.textContent = '';
+          if (nameField && nameField.dataset.auto === '1') { nameField.value = ''; nameField.dataset.auto = ''; }
+        }
+      }
+    });
+
+    document.addEventListener('submit', async (e) => {
+      const form = e.target.closest('[data-form]');
+      if (!form) return;
+      e.preventDefault();
+      const fd = new FormData(form);
+      const kind = form.dataset.form;
+      if (kind === 'login') return doLogin(fd);
+      if (kind === 'logMovement') return doLogMovement(fd, form);
+      if (kind === 'changePassword') return doChangePassword(fd, form);
+      if (kind === 'addUser') return doAddUser(fd, form);
+      if (kind === 'updateUser') return doUpdateUser(fd, form);
+      if (kind === 'doApproveReject') return doApproveReject(fd, form);
+      if (kind === 'submitLateReturn') return doSubmitLateReturn(fd, form);
+    });
+
+    // ─── BOOT ──────────────────────────────────────────────────────────
+    render();
+    updateOnlineStatus();
+    if (state.view === 'app' && state.user) { loadAll({force:true}); startOverdueTicker(); }
+  </script>
+</body>
+</html>
