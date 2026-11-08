@@ -9,9 +9,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Crescent SNEC">
   <title>Crescent SNEC · Movement Register</title>
-  <link rel="icon" type="image/png" href="snec-logo.png">
-  <link rel="apple-touch-icon" href="snec-app-icon.png">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png">
+  <link rel="apple-touch-icon" href="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -56,8 +55,8 @@
   <div id="app" aria-live="polite"></div>
   <div class="toast-wrap" id="toastWrap" aria-live="polite"></div>
   <div id="modalHost"></div>
-  <script src="vendor/qrcode-generator/qrcode.js"></script>
-  <script src="vendor/qr-scanner/qr-scanner.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qr-scanner@1.4.2/qr-scanner.umd.min.js"></script>
   <script>
     (() => {
       'use strict';
@@ -239,7 +238,7 @@
         return `<main class="login-page">
           <div class="login-shell">
             <section class="login-art" aria-label="Campus movement register">
-              <div class="brand-lockup"><img class="brand-mark brand-logo" src="snec-logo.png" alt="SNEC logo"><div><small>Campus register</small><strong>${CAMPUS}</strong></div></div>
+              <div class="brand-lockup"><img class="brand-mark brand-logo" src="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png" alt="SNEC logo"><div><small>Campus register</small><strong>${CAMPUS}</strong></div></div>
               <div class="login-copy"><span class="eyebrow">A considered campus</span><h1>Every journey,<br>accounted for.</h1><p>A clear, reliable record of campus movements, approvals and returns — thoughtfully organized for students and staff.</p></div>
               <div class="login-points"><div><strong>One ledger</strong><span>Every movement in one place</span></div><div><strong>Live status</strong><span>Returns and approvals at a glance</span></div></div>
             </section>
@@ -263,7 +262,7 @@
         const navMarkup = items => items.map(([id,label,icon])=>`<button type="button" class="nav-item ${state.tab===id?'active':''}" data-action="tab" data-tab="${id}" ${state.tab===id?'aria-current="page"':''}><span class="nav-icon" aria-hidden="true">${icon}</span><span>${label}</span>${id==='approvals'&&countPending()?`<span class="nav-count">${countPending()}</span>`:''}${id==='board'&&countOverdue()?`<span class="nav-count">${countOverdue()}</span>`:''}</button>`).join('');
         return `<div class="app">
           <aside class="sidebar">
-            <div class="side-brand"><img class="brand-mark brand-logo" src="snec-logo.png" alt=""><div><strong>${CAMPUS}</strong><small>Movement register</small></div></div>
+            <div class="side-brand"><img class="brand-mark brand-logo" src="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png" alt=""><div><strong>${CAMPUS}</strong><small>Movement register</small></div></div>
             <div class="nav-caption">${user.role==='student'?'Student portal':user.role==='gatekeeper'?'Gatekeeper station':'Workspace'}</div>
             <nav class="nav" aria-label="Main navigation">${navMarkup(nav)}</nav>
             <div class="side-spacer"></div>
@@ -275,7 +274,7 @@
             </div>
           </aside>
           <main class="main">
-            <header class="topbar"><div class="topbar-left"><img class="brand-mark brand-logo" src="snec-logo.png" alt="" aria-hidden="true" style="width:34px;height:34px;border-radius:10px"><div class="topbar-title">${escapeHtml(titleForTab(state.tab))}</div></div><div class="topbar-right"><span class="live-indicator">${navigator.onLine?'Connected':'Offline'}</span><button class="icon-btn" type="button" data-action="refresh" aria-label="Refresh data">↻</button><button class="icon-btn" type="button" data-action="theme" aria-label="Toggle color theme">${state.theme==='dark'?'☼':'◐'}</button><button class="icon-btn" type="button" data-action="logout" aria-label="Sign out">↗</button></div></header>
+            <header class="topbar"><div class="topbar-left"><img class="brand-mark brand-logo" src="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png" alt="" aria-hidden="true" style="width:34px;height:34px;border-radius:10px"><div class="topbar-title">${escapeHtml(titleForTab(state.tab))}</div></div><div class="topbar-right"><span class="live-indicator">${navigator.onLine?'Connected':'Offline'}</span><button class="icon-btn" type="button" data-action="refresh" aria-label="Refresh data">↻</button><button class="icon-btn" type="button" data-action="theme" aria-label="Toggle color theme">${state.theme==='dark'?'☼':'◐'}</button><button class="icon-btn" type="button" data-action="logout" aria-label="Sign out">↗</button></div></header>
             <div class="content" id="content">${state.dataLoading?renderSkeleton():renderTab()}</div>
           </main>
           <nav class="mobile-nav" aria-label="Mobile navigation">${navMarkup(nav.filter(x=>['overview','log','approvals','board','status','history','gate'].includes(x[0])).slice(0,5))}<button type="button" class="nav-item ${['ledger','users','analytics','profile'].includes(state.tab)?'active':''}" data-action="more"><span class="nav-icon">···</span><span>More</span></button></nav>
@@ -283,7 +282,7 @@
       }
       function renderSkeleton() { return `<div class="loading"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton" style="height:220px"></div></div>`; }
       function installButtonMarkup(className='btn btn-soft btn-sm') {
-        return isAppInstalled()?'':`<button class="${className}" type="button" data-action="install"><img class="install-icon" src="snec-app-icon.png" alt="" aria-hidden="true"><span>Install app</span></button>`;
+        return isAppInstalled()?'':`<button class="${className}" type="button" data-action="install"><img class="install-icon" src="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png" alt="" aria-hidden="true"><span>Install app</span></button>`;
       }
       function isAppInstalled() {
         return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
@@ -846,7 +845,7 @@
         }else if(kind==='more'){
           body=`<h2>More workspace</h2><p class="modal-intro">Choose a section to open.</p><div class="nav">${navForUser().filter(x=>!['overview','log','approvals','board','status','history'].includes(x[0])).map(([id,label,icon])=>`<button class="nav-item" data-action="tab-close" data-tab="${id}"><span class="nav-icon">${icon}</span>${label}</button>`).join('')}<button class="nav-item" data-action="theme-close"><span class="nav-icon">◐</span>Switch theme</button><button class="nav-item" data-action="logout"><span class="nav-icon">↗</span>Sign out</button></div>${installButtonMarkup('btn btn-soft btn-block more-install')}${state.user.role==='admin'?'<a class="developer-credit" href="https://wa.me/917306814004" target="_blank" rel="noopener noreferrer" aria-label="Contact ImDevops on WhatsApp">ImDevops</a>':''}`;
         }else if(kind==='install-help'){
-          body=`<div class="install-dialog-brand"><img class="install-dialog-icon" src="snec-app-icon.png" alt=""><div><h2>Install Crescent SNEC</h2><p class="modal-intro">Add the campus register to your device for quick access.</p></div></div><ol class="install-instructions">${installInstructions().map(step=>`<li>${escapeHtml(step)}</li>`).join('')}</ol><p class="install-note">For installation, open this app from its secure campus web address in a supported browser. “Add to Home Screen” adds a shortcut on browsers that don’t offer automatic installation.</p><div class="modal-actions"><button class="btn btn-primary" type="button" data-action="close-modal">Got it</button></div>`;
+          body=`<div class="install-dialog-brand"><img class="install-dialog-icon" src="https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png" alt=""><div><h2>Install Crescent SNEC</h2><p class="modal-intro">Add the campus register to your device for quick access.</p></div></div><ol class="install-instructions">${installInstructions().map(step=>`<li>${escapeHtml(step)}</li>`).join('')}</ol><p class="install-note">For installation, open this app from its secure campus web address in a supported browser. “Add to Home Screen” adds a shortcut on browsers that don’t offer automatic installation.</p><div class="modal-actions"><button class="btn btn-primary" type="button" data-action="close-modal">Got it</button></div>`;
         }
         modalHost.innerHTML=`<div class="modal-layer" data-action="backdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalHeading"><button class="modal-close" type="button" data-action="close-modal" aria-label="Close dialog">×</button><div id="modalContent">${body}</div></section></div>`;
         const heading=$('#modalContent h2');if(heading)heading.id='modalHeading';
@@ -972,6 +971,52 @@
         navigator.serviceWorker.register('./service-worker.js').catch(error=>console.warn('App installation support could not register its offline shell.',error));
       }
       if(state.view==='app'){if(state.user.role==='student')loadStudentData();else if(state.user.role==='gatekeeper')loadGateData();else loadData();startTimers()}
+
+      // ---- PWA: inline manifest + icons generated from the logo ----
+      (function () {
+        const LOGO = 'https://i.postimg.cc/dQNpbgBh/SNEC-Logo-(2).png';
+        const base = location.href.split('#')[0].split('?')[0];
+        function icon(img, size, pad) {
+          const c = document.createElement('canvas');
+          c.width = c.height = size;
+          const x = c.getContext('2d');
+          x.fillStyle = '#ffffff';
+          x.fillRect(0, 0, size, size);
+          const inner = size * (1 - 2 * pad);
+          const r = Math.min(inner / img.naturalWidth, inner / img.naturalHeight);
+          const w = img.naturalWidth * r, h = img.naturalHeight * r;
+          x.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+          return c.toDataURL('image/png');
+        }
+        function attach(icons) {
+          const manifest = {
+            id: base, name: 'Crescent SNEC · Movement Register', short_name: 'Crescent SNEC',
+            description: 'Crescent SNEC campus movement register',
+            start_url: base, scope: base.replace(/[^/]*$/, ''), display: 'standalone',
+            background_color: '#f4f3ec', theme_color: '#244b5a', icons
+          };
+          const url = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
+          let link = document.querySelector('link[rel="manifest"]');
+          if (!link) { link = document.createElement('link'); link.rel = 'manifest'; document.head.appendChild(link); }
+          link.href = url;
+        }
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+          try {
+            const i192 = icon(img, 192, .08), i512 = icon(img, 512, .08), iMask = icon(img, 512, .2);
+            const apple = document.querySelector('link[rel="apple-touch-icon"]');
+            if (apple) apple.href = icon(img, 180, .08);
+            attach([
+              { src: i192, sizes: '192x192', type: 'image/png', purpose: 'any' },
+              { src: i512, sizes: '512x512', type: 'image/png', purpose: 'any' },
+              { src: iMask, sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+            ]);
+          } catch (e) { attach([{ src: LOGO, sizes: '512x512', type: 'image/png' }]); }
+        };
+        img.onerror = () => attach([{ src: LOGO, sizes: '512x512', type: 'image/png' }]);
+        img.src = LOGO;
+      })();
     })();
   </script>
 </body>
