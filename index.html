@@ -411,15 +411,54 @@
         if(video)video.style.display='none';
         if(hint)hint.hidden=false;
       }
+      async function requestCameraAccess() {
+        // Must run directly from the tap so mobile browsers show the permission prompt.
+        const attempts=[{video:{facingMode:{ideal:'environment'}},audio:false},{video:true,audio:false}];
+        let lastError=null;
+        for(const constraints of attempts){
+          try{
+            const stream=await navigator.mediaDevices.getUserMedia(constraints);
+            stream.getTracks().forEach(track=>track.stop());
+            return null;
+          }catch(error){
+            lastError=error;
+            if(error&&(error.name==='NotAllowedError'||error.name==='SecurityError'||error.name==='NotFoundError'||error.name==='NotReadableError'))break;
+          }
+        }
+        return lastError;
+      }
+      function cameraErrorMessage(error) {
+        const name=error&&error.name||'';
+        const embedded=window.self!==window.top;
+        if(!window.isSecureContext)return 'Camera needs a secure HTTPS address. Open the https:// link of this app.';
+        if(name==='NotAllowedError'||name==='SecurityError'){
+          if(embedded)return 'Camera is blocked because this page is embedded inside another page. Open the app link directly in Chrome or Safari.';
+          const ua=navigator.userAgent;
+          if(/iPhone|iPad|iPod/i.test(ua))return 'Camera is blocked. Go to Settings › Safari › Camera (or Settings › the installed app) and choose Allow, then reload.';
+          return 'Camera is blocked. Tap the lock icon in the address bar › Permissions › Camera › Allow (or Android Settings › Apps › Chrome › Permissions › Camera), then reload.';
+        }
+        if(name==='NotFoundError'||name==='OverconstrainedError')return 'No camera was found on this device.';
+        if(name==='NotReadableError'||name==='AbortError')return 'The camera is in use by another app. Close it and try again.';
+        return 'Camera could not start. Enter the pass code manually.';
+      }
       async function startGateScanner() {
         const video=$('#gateScannerVideo'),hint=$('#gateCameraHint'),status=$('#gateScanStatus');
         if(!video||!status)return;
         if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
-          status.textContent='Camera scanning is not available in this browser. Enter the pass code manually.';
+          status.textContent=window.isSecureContext?'Camera scanning is not available in this browser. Enter the pass code manually.':'Camera needs a secure HTTPS address. Open the https:// link of this app.';
           return;
         }
         if(typeof QrScanner==='undefined'){
-          status.textContent='The local QR scanner could not be loaded. Enter the pass code manually.';
+          status.textContent='The QR scanner could not be loaded. Check your connection and reload, or enter the pass code manually.';
+          return;
+        }
+        status.textContent='Requesting camera access…';
+        const accessError=await requestCameraAccess();
+        if(accessError){
+          const message=cameraErrorMessage(accessError);
+          if(hint){hint.hidden=false;hint.textContent=message}
+          status.textContent=message;
+          toast(message,'error');
           return;
         }
         if(!state.gateScanner){
@@ -430,6 +469,7 @@
           },{returnDetailedScanResult:true,preferredCamera:'environment',maxScansPerSecond:10,onDecodeError:()=>{}});
         }
         try{
+          video.setAttribute('playsinline','');video.muted=true;
           video.style.display='block';
           if(hint)hint.hidden=true;
           await state.gateScanner.start();
@@ -441,9 +481,10 @@
         }catch(error){
           stopGateScanner();
           video.style.display='none';
-          if(hint){hint.hidden=false;hint.textContent='Camera unavailable. Check permission and HTTPS, or enter the pass code manually.'}
-          status.textContent='Camera could not start. Enter the pass code manually.';
-          toast(error&&error.message?`Camera error: ${error.message}`:'Camera access was denied or unavailable.','error');
+          const message=cameraErrorMessage(typeof error==='string'?{name:/denied|permission/i.test(error)?'NotAllowedError':'Error'}:error);
+          if(hint){hint.hidden=false;hint.textContent=message}
+          status.textContent=message;
+          toast(message,'error');
         }
       }
       async function lookupGatePass(value) {
